@@ -1,4 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using ProductService.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<ProductDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("ProductDb")));
 
 // Add services to the container.
 
