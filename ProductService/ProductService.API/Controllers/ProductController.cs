@@ -2,9 +2,6 @@ using Microservices.Shared;
 using Microsoft.AspNetCore.Mvc;
 using ProductService.Application.Interfaces;
 
-
-
-
 namespace ProductService.API.Controllers;
 
 [ApiController]
@@ -38,19 +35,10 @@ public class ProductController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIResponse>> GetProductById(int id)
     {
-        var product = await _productService.GetProductByIdAsync(id);
-
-        if (product == null)
-        {
-            throw new KeyNotFoundException("Product not found");
-        }
-
+        var product = await _productService.GetProductByIdAsync(id) ?? throw new KeyNotFoundException("Product not found");
         _response.Result = product;
         _response.StatusCode = System.Net.HttpStatusCode.OK;
         _response.IsSuccess = true;
         return Ok(_response);
     }
-
-    
-
 }

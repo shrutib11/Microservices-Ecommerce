@@ -21,58 +21,59 @@ public class CategoryController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll()
     {
         var categories = await _categoryService.GetAllCategoriesAsync();
-        _response.Result = categories;
-        _response.StatusCode = HttpStatusCode.OK;
-        _response.IsSuccess = true;
-        return Ok(_response);
+        return Ok(ApiResponseHelper.Success(categories, HttpStatusCode.OK));
     }
 
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
     {
         var category = await _categoryService.GetCategoryById(id) ?? throw new KeyNotFoundException("Category Not Found");
-        _response.Result = category;
-        _response.StatusCode = HttpStatusCode.OK;
-        _response.IsSuccess = true;
-        return Ok(_response);
+        return Ok(ApiResponseHelper.Success(category, HttpStatusCode.OK));
     }
 
     [HttpPost]
     [Consumes("multipart/form-data")]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Add([FromForm] CategoryDto categoryDto)
     {
         await _categoryService.Add(categoryDto);
-        _response.StatusCode = HttpStatusCode.Created;
-        _response.IsSuccess = true;
-        return Ok(_response);
+        return Ok(ApiResponseHelper.Success(HttpStatusCode.Created));
     }
 
     [HttpPut]
     [Consumes("multipart/form-data")]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update([FromForm] CategoryDto categoryDto)
     {
+        var category = await _categoryService.GetCategoryById(categoryDto.Id);
+        if (category == null)
+        {
+            return NotFound(ApiResponseHelper.Error("Category Not Found", HttpStatusCode.NotFound));
+        }
         await _categoryService.Update(categoryDto);
-        _response.StatusCode = HttpStatusCode.OK;
-        _response.IsSuccess = true;
-        return Ok(_response);
+        return Ok(ApiResponseHelper.Success(HttpStatusCode.OK));
     }
 
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {
-        var category = await _categoryService.GetCategoryById(id) ?? throw new KeyNotFoundException("Category Not Found");
+        var category = await _categoryService.GetCategoryById(id);
+        if (category == null)
+        {
+            return NotFound(ApiResponseHelper.Error("Category Not Found", HttpStatusCode.NotFound));
+        }
         await _categoryService.Delete(id);
-        _response.StatusCode = HttpStatusCode.NoContent;
-        _response.IsSuccess = true;
-        return Ok(_response);
+        return Ok(ApiResponseHelper.Success(HttpStatusCode.NoContent));
     }
 }
