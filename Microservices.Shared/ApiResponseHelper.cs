@@ -14,7 +14,7 @@ public class ApiResponseHelper
         };
     }
 
-    public static APIResponse Error(string errorMessage, HttpStatusCode statusCode = HttpStatusCode.OK)
+    public static APIResponse Error(string errorMessage, HttpStatusCode statusCode = HttpStatusCode.InternalServerError)
     {
         return new APIResponse
         {
