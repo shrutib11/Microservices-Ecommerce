@@ -3,6 +3,7 @@ using CategoryService.Application.Mappings;
 using CategoryService.Domain.Interfaces;
 using CategoryService.Infrastructure;
 using CategoryService.Infrastructure.Repositories;
+using Microservices.Shared;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

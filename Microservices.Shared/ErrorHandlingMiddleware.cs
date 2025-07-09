@@ -24,16 +24,16 @@ public class ErrorHandlingMiddleware
         }
         catch (Exception exception)
         {
-            _response = exception switch
+            
+            if (exception is HttpStatusCodeException httpEx)
             {
-                InvalidCredentialException invalidCredEx => ApiResponseHelper.Error(invalidCredEx.Message, HttpStatusCode.BadRequest),
-                InvalidOperationException invalidOpEx => ApiResponseHelper.Error(invalidOpEx.Message, HttpStatusCode.BadRequest),
-                ArgumentNullException argNullEx => ApiResponseHelper.Error(argNullEx.Message, HttpStatusCode.BadRequest),
-                ArgumentException argEx => ApiResponseHelper.Error(argEx.Message, HttpStatusCode.BadRequest),
-                KeyNotFoundException keyNotFoundEx => ApiResponseHelper.Error(keyNotFoundEx.Message, HttpStatusCode.NotFound),
-                Microsoft.EntityFrameworkCore.DbUpdateException dbUpdateEx => ApiResponseHelper.Error("Database update error. Please check your input.", HttpStatusCode.Conflict),
-                _ => ApiResponseHelper.Error("An unexpected error occurred. Please try again later.", HttpStatusCode.InternalServerError),
-            };
+                _response = ApiResponseHelper.Error(httpEx.Message, httpEx.StatusCode);
+            }
+            else
+            {
+                _response = ApiResponseHelper.Error("An unexpected error occurred. Please try again later.", HttpStatusCode.InternalServerError);
+            }
+
             context.Response.StatusCode = (int)_response.StatusCode;
             context.Response.ContentType = "application/json";
 
