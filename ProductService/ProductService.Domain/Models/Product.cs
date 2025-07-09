@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ProductService.Domain;
+namespace ProductService.Domain.Models;
 
 public class Product
 {
@@ -31,7 +31,7 @@ public class Product
 
     public bool IsDeleted { get; set; } = false;
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
     
     public DateTime? UpdatedAt { get; set; }
 }
