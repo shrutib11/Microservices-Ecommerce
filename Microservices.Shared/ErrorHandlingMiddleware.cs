@@ -1,8 +1,7 @@
-using System.Net.Http;
 using System.Security.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using System.Net;
 
 
 namespace Microservices.Shared;
@@ -25,47 +24,16 @@ public class ErrorHandlingMiddleware
         }
         catch (Exception exception)
         {
-            _response.IsSuccess = false;
-            _response.Result = null;
-
-            switch (exception)
+            _response = exception switch
             {
-                case InvalidCredentialException invalidCredEx:
-                    _response.StatusCode = System.Net.HttpStatusCode.BadRequest;
-                    _response.ErrorMessages = new List<string> { invalidCredEx.Message };
-                    break;
-
-                case InvalidOperationException invalidOpEx:
-                    _response.StatusCode = System.Net.HttpStatusCode.BadRequest;
-                    _response.ErrorMessages = new List<string> { invalidOpEx.Message };
-                    break;
-
-                case ArgumentNullException argNullEx:
-                    _response.StatusCode = System.Net.HttpStatusCode.BadRequest;
-                    _response.ErrorMessages = new List<string> { argNullEx.Message };
-                    break;
-
-                case ArgumentException argEx:
-                    _response.StatusCode = System.Net.HttpStatusCode.BadRequest;
-                    _response.ErrorMessages = new List<string> { argEx.Message };
-                    break;
-
-                case KeyNotFoundException keyNotFoundEx:
-                    _response.StatusCode = System.Net.HttpStatusCode.NotFound;
-                    _response.ErrorMessages = new List<string> { keyNotFoundEx.Message };
-                    break;
-
-                case Microsoft.EntityFrameworkCore.DbUpdateException dbUpdateEx:
-                    _response.StatusCode = System.Net.HttpStatusCode.Conflict;
-                    _response.ErrorMessages = new List<string> { "Database update error. Please check your input." };
-                    break;
-
-                default:
-                    _response.StatusCode = System.Net.HttpStatusCode.InternalServerError;
-                    _response.ErrorMessages = new List<string> { "An unexpected error occurred. Please try again later." };
-                    break;
-            }
-
+                InvalidCredentialException invalidCredEx => ApiResponseHelper.Error(invalidCredEx.Message, HttpStatusCode.BadRequest),
+                InvalidOperationException invalidOpEx => ApiResponseHelper.Error(invalidOpEx.Message, HttpStatusCode.BadRequest),
+                ArgumentNullException argNullEx => ApiResponseHelper.Error(argNullEx.Message, HttpStatusCode.BadRequest),
+                ArgumentException argEx => ApiResponseHelper.Error(argEx.Message, HttpStatusCode.BadRequest),
+                KeyNotFoundException keyNotFoundEx => ApiResponseHelper.Error(keyNotFoundEx.Message, HttpStatusCode.NotFound),
+                Microsoft.EntityFrameworkCore.DbUpdateException dbUpdateEx => ApiResponseHelper.Error("Database update error. Please check your input.", HttpStatusCode.Conflict),
+                _ => ApiResponseHelper.Error("An unexpected error occurred. Please try again later.", HttpStatusCode.InternalServerError),
+            };
             context.Response.StatusCode = (int)_response.StatusCode;
             context.Response.ContentType = "application/json";
 
