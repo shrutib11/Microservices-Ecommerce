@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Net;
-using System.Threading.Tasks;
+using Microservices.Shared;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Application.DTOs;
 using UserService.Application.Interfaces;
-using UserService.Domain.Models;
+
 
 namespace UserService.API.Controllers
 {
