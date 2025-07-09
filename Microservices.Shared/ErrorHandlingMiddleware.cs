@@ -11,12 +11,10 @@ public class ErrorHandlingMiddleware
 {
     private readonly RequestDelegate _next;
     protected APIResponse _response = new();
-    private readonly ILogger<ErrorHandlingMiddleware> _logger;
 
-    public ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandlingMiddleware> logger)
+    public ErrorHandlingMiddleware(RequestDelegate next)
     {
         _next = next;
-        _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -67,9 +65,6 @@ public class ErrorHandlingMiddleware
                     _response.ErrorMessages = new List<string> { "An unexpected error occurred. Please try again later." };
                     break;
             }
-
-            // _logger.LogError(
-            // exception, "Exception occurred: {Message}. Response status: {Status}", _response.ErrorMessage, _response.StatusCode);
 
             context.Response.StatusCode = (int)_response.StatusCode;
             context.Response.ContentType = "application/json";

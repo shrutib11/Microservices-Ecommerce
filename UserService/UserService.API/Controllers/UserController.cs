@@ -33,11 +33,7 @@ namespace UserService.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<APIResponse> GetId(int id)
         {
-            UserDto? model = await _userService.GetUserById(id);
-            if (model == null)
-            {
-                throw new KeyNotFoundException($"User with ID {id} not found.");
-            }
+            UserDto? model = await _userService.GetUserById(id) ?? throw new KeyNotFoundException($"User with ID {id} not found.");
             return new APIResponse
             {
                 StatusCode = (HttpStatusCode)StatusCodes.Status200OK,

@@ -14,8 +14,14 @@
         "problemMatcher": []
       },
       {
+        "label": "Run UserService",
+        "type": "shell",
+        "command": "dotnet run --project ./UserService/UserService.API",
+        "problemMatcher": []
+      },
+      {
         "label": "Run All Services",
-        "dependsOn": ["Run CategoryService", "Run ProductService"],
+        "dependsOn": ["Run CategoryService", "Run ProductService", "Run UserService"],
         "dependsOrder": "parallel"
       }
     ]
