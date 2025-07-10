@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net;
 using Microservices.Shared;
 using Microsoft.AspNetCore.Mvc;
 using ProductService.Application.DTOs;
@@ -17,7 +16,7 @@ public class ProductController : ControllerBase
         _productService = productService;
     }
 
-    [HttpGet]
+    [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -76,7 +75,6 @@ public class ProductController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteProduct(int id)
     {
-
         var isDeleted = await _productService.DeleteProductAsync(id);
         if (!isDeleted)
         {
@@ -85,8 +83,4 @@ public class ProductController : ControllerBase
 
         return Ok(ApiResponseHelper.Success(HttpStatusCode.NoContent));
     }
-
-
-    
-
 }

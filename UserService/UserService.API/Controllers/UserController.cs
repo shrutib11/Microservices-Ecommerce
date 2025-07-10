@@ -27,7 +27,7 @@ namespace UserService.API.Controllers
             return Ok(ApiResponseHelper.Success(await _userService.GetAllUsers(), HttpStatusCode.OK));
         }
 
-        [HttpGet("GetUserById", Name = "GetUserById")]
+        [HttpGet("GetUserById/{id}", Name = "GetUserById")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDto))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -19,7 +19,7 @@ public class CategoryController : ControllerBase
         _response = new();
     }
 
-    [HttpGet]
+    [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll()
@@ -28,7 +28,7 @@ public class CategoryController : ControllerBase
         return Ok(ApiResponseHelper.Success(categories, HttpStatusCode.OK));
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("GetById/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -42,16 +42,16 @@ public class CategoryController : ControllerBase
         return Ok(ApiResponseHelper.Success(category, HttpStatusCode.OK));
     }
 
-    [HttpPost]
+    [HttpPost("Add")]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Add([FromForm] CategoryDto categoryDto)
     {
         await _categoryService.Add(categoryDto);
-        return Ok(ApiResponseHelper.Success(HttpStatusCode.Created));
+        return Ok(ApiResponseHelper.Success(null, HttpStatusCode.Created));
     }
 
-    [HttpPut]
+    [HttpPut("Update")]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -63,10 +63,10 @@ public class CategoryController : ControllerBase
             return NotFound(ApiResponseHelper.Error("Category Not Found", HttpStatusCode.NotFound));
         }
         await _categoryService.Update(categoryDto);
-        return Ok(ApiResponseHelper.Success(HttpStatusCode.OK));
+        return Ok(ApiResponseHelper.Success(null, HttpStatusCode.OK));
     }
 
-    [HttpPatch("{id}")]
+    [HttpPatch("Delete/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -78,6 +78,6 @@ public class CategoryController : ControllerBase
             return NotFound(ApiResponseHelper.Error("Category Not Found", HttpStatusCode.NotFound));
         }
         await _categoryService.Delete(id);
-        return Ok(ApiResponseHelper.Success(HttpStatusCode.NoContent));
+        return Ok(ApiResponseHelper.Success(null, HttpStatusCode.NoContent));
     }
 }
