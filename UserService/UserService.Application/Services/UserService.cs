@@ -27,6 +27,7 @@ namespace UserService.Application.Services
 
         public async Task<UserDto> CreateUser(UserDto model)
         {
+            model.Password = PasswordHelper.HashPassword(model.Password);
             User newUser = _mapper.Map<User>(model);
             var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
             if (model.UserFile != null)
@@ -62,8 +63,12 @@ namespace UserService.Application.Services
         public async Task<UserDto?> UpdateUser(UserDto model)
         {
             User? currentUser = await _userRepository.GetUserByIdSysnc(model.Id);
+            if (model.Password != null)
+            {
+                model.Password = PasswordHelper.HashPassword(model.Password);
+            }
             if (currentUser == null)
-            { 
+            {
                 return null;
             }
             _mapper.Map(model, currentUser);
