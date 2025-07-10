@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net;
 using Microservices.Shared;
 using Microsoft.AspNetCore.Mvc;
 using ProductService.Application.DTOs;
@@ -32,8 +33,11 @@ public class ProductController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<APIResponse>> GetProductById(int id)
     {
-        var product = await _productService.GetProductByIdAsync(id)
-                    ?? throw new HttpStatusCodeException($"Product with ID {id} not found.", HttpStatusCode.NotFound);
+        var product = await _productService.GetProductByIdAsync(id);
+        if (product == null || product.Id == 0)
+        {
+            return NotFound(ApiResponseHelper.Error("Product Not Found", HttpStatusCode.NotFound));
+        }
 
         return Ok(ApiResponseHelper.Success(product, HttpStatusCode.OK));
     }
