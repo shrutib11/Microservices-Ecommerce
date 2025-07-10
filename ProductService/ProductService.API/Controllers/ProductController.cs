@@ -7,7 +7,7 @@ using ProductService.Application.Interfaces;
 namespace ProductService.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/product")]
 public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
@@ -41,7 +41,7 @@ public class ProductController : ControllerBase
         return Ok(ApiResponseHelper.Success(product, HttpStatusCode.OK));
     }
 
-    [HttpPost]
+    [HttpPost("Add")]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -49,11 +49,10 @@ public class ProductController : ControllerBase
     public async Task<IActionResult> AddProduct([FromForm] ProductDto productDto)
     {
         var addedProduct = await _productService.AddProductAsync(productDto);
-        return CreatedAtAction(nameof(GetProductById), new { id = addedProduct.Id },
-            ApiResponseHelper.Success(addedProduct, HttpStatusCode.Created));
+        return Ok(ApiResponseHelper.Success(addedProduct, HttpStatusCode.Created));
     }
 
-    [HttpPut]
+    [HttpPut("Update")]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -69,7 +68,7 @@ public class ProductController : ControllerBase
         return Ok(ApiResponseHelper.Success(updatedProduct, HttpStatusCode.OK));
     }
 
-    [HttpDelete("{id}")]
+    [HttpPatch("Delete/{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

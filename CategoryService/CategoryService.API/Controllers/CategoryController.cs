@@ -28,7 +28,7 @@ public class CategoryController : ControllerBase
         return Ok(ApiResponseHelper.Success(categories, HttpStatusCode.OK));
     }
 
-    [HttpGet("GetById/{id}")]
+    [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
