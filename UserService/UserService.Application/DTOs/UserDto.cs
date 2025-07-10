@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace UserService.Application.DTOs
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public IFormFile? UserFile { get; set; } 
         public string PinCode { get; set; } = string.Empty;
