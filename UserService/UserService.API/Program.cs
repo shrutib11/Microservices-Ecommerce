@@ -10,6 +10,7 @@ using UserService.Infrastructure;
 using UserService.Infrastructure.Repositories;
 
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -25,11 +26,7 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly(), typeof(UserProfi
 
 builder.Services.AddSwaggerGen(c =>
     {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-        c.CustomOperationIds(apiDesc =>
-    {
-        return apiDesc.TryGetMethodInfo(out MethodInfo methodInfo) ? methodInfo.Name : null;
-    });
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "User MicroService", Version = "v1" });
     });
 
 var app = builder.Build();
@@ -39,7 +36,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "User MicroService");
     });
 
     app.UseSwaggerUI();

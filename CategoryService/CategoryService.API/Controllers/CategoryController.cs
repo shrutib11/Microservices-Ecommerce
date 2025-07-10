@@ -34,7 +34,11 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
     {
-        var category = await _categoryService.GetCategoryById(id) ?? throw new KeyNotFoundException("Category Not Found");
+        var category = await _categoryService.GetCategoryById(id) ;
+        if (category == null || category.Id == 0)
+        { 
+            return NotFound(ApiResponseHelper.Error("Category Not Found", HttpStatusCode.NotFound));
+        }
         return Ok(ApiResponseHelper.Success(category, HttpStatusCode.OK));
     }
 
