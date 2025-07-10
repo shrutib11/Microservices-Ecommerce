@@ -19,7 +19,7 @@ namespace UserService.API.Controllers
             _userService = userService;
         }
 
-        [HttpGet("GetAllUsers", Name = "GetAllUsers")]
+        [HttpGet("GetAll", Name = "GetAllUsers")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserDto>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll()
@@ -27,7 +27,7 @@ namespace UserService.API.Controllers
             return Ok(ApiResponseHelper.Success(await _userService.GetAllUsers(), HttpStatusCode.OK));
         }
 
-        [HttpGet("GetUserById/{id}", Name = "GetUserById")]
+        [HttpGet("GetById/{id}", Name = "GetUserById")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDto))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -41,7 +41,7 @@ namespace UserService.API.Controllers
             return Ok(ApiResponseHelper.Success(model, HttpStatusCode.OK));
         }
 
-        [HttpPost("CreateUser", Name = "RegisterUser")]
+        [HttpPost("Register", Name = "RegisterUser")]
         [Consumes("multipart/form-data")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDto))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -57,7 +57,7 @@ namespace UserService.API.Controllers
             return Ok(ApiResponseHelper.Success(userModel, HttpStatusCode.Created));
         }
 
-        [HttpPut("UpdateUser", Name = "UpdateUser")]
+        [HttpPut("Update", Name = "UpdateUser")]
         [Consumes("multipart/form-data")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]

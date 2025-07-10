@@ -140,8 +140,56 @@
             "UpstreamHttpMethod": [
                 "PATCH"
             ]
+        },
+        {
+          "DownstreamPathTemplate": "/api/User/GetAll",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "localhost",
+              "Port": 5000
+            }
+          ],
+          "UpstreamPathTemplate": "/user/GetAllUsers",
+          "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+        },
+        {
+          "DownstreamPathTemplate": "/api/User/GetById/{id}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "localhost",
+              "Port": 5000
+            }
+          ],
+          "UpstreamPathTemplate": "/user/{id}",
+          "UpstreamHttpMethod": [ "GET"]
+        },
+        {
+          "DownstreamPathTemplate": "/api/User/Register",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "localhost",
+              "Port": 5000
+            }
+          ],
+          "UpstreamPathTemplate": "/user/Add",
+          "UpstreamHttpMethod": [ "POST" ]
+        },
+        {
+          "DownstreamPathTemplate": "/api/User/Update",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "localhost",
+              "Port": 5000
+            }
+          ],
+          "UpstreamPathTemplate": "/user/Update",
+          "UpstreamHttpMethod": [ "PUT" ]
         }
-    ],
+      ],
     "GlobalConfiguration": {
         "BaseUrl": "http://localhost:7000"
     }
