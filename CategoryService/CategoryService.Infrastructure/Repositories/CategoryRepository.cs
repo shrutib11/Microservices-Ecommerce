@@ -24,18 +24,17 @@ public class CategoryRepository : ICategoryRepository
         return await _context.Categories.AsNoTracking().Where(c => c.IsDeleted == false && c.Id == id).FirstOrDefaultAsync();
     }
 
-    public async Task Add(Category category)
+    public async Task<Category> Add(Category category)
     {
         await _context.Categories.AddAsync(category);
+        await _context.SaveChangesAsync();
+        return category;
     }
 
-    public void Update(Category category)
+    public async Task<Category> Update(Category category)
     {
         _context.Categories.Update(category);
-    }
-
-    public async Task SaveChangesAsync()
-    {
         await _context.SaveChangesAsync();
+        return category;
     }
 }

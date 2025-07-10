@@ -9,9 +9,9 @@ public interface ICategoryService
 
     Task<CategoryDto?> GetCategoryById(int id);
 
-    Task Add(CategoryDto categoryDto);
+    Task<CategoryDto> Add(CategoryDto categoryDto);
 
-    Task Update(CategoryDto categoryDto);
+    Task<CategoryDto> Update(CategoryDto categoryDto);
 
     Task Delete(int id);
 }

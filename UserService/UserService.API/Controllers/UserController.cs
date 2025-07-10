@@ -58,7 +58,7 @@ namespace UserService.API.Controllers
                 return Conflict(ApiResponseHelper.Error("User with this email already exists.", HttpStatusCode.Conflict));
             }
             UserDto userModel = await _userService.CreateUser(model);
-            return Ok(ApiResponseHelper.Success(userModel, HttpStatusCode.Created));
+            return CreatedAtRoute("GetUserById", new { id = userModel.Id }, ApiResponseHelper.Success(userModel, HttpStatusCode.Created));
         }
 
         [HttpPut("Update", Name = "UpdateUser")]

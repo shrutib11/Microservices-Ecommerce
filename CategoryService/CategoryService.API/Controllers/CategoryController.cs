@@ -47,8 +47,8 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Add([FromForm] CategoryDto categoryDto)
     {
-        await _categoryService.Add(categoryDto);
-        return Ok(ApiResponseHelper.Success(null, HttpStatusCode.Created));
+        var category = await _categoryService.Add(categoryDto);
+        return Ok(ApiResponseHelper.Success(category, HttpStatusCode.Created));
     }
 
     [HttpPut("Update")]
@@ -62,8 +62,8 @@ public class CategoryController : ControllerBase
         {
             return NotFound(ApiResponseHelper.Error("Category Not Found", HttpStatusCode.NotFound));
         }
-        await _categoryService.Update(categoryDto);
-        return Ok(ApiResponseHelper.Success(null, HttpStatusCode.OK));
+        category = await _categoryService.Update(categoryDto);
+        return Ok(ApiResponseHelper.Success(category, HttpStatusCode.OK));
     }
 
     [HttpPatch("Delete/{id}")]
