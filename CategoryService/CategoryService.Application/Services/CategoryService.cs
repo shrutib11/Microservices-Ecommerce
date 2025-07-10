@@ -33,17 +33,16 @@ public class CategoryService : ICategoryService
         return null;
     }
 
-    public async Task Add(CategoryDto categoryDto)
+    public async Task<CategoryDto> Add(CategoryDto categoryDto)
     {
         var category = _mapper.Map<Category>(categoryDto);
         var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
         category.CategoryImage = ImageHelper.SaveImageWithName(categoryDto.CategoryFile, categoryDto.Name, rootPath);
-        await _categoryRepository.Add(category);
-        await _categoryRepository.SaveChangesAsync();
-
+        category = await _categoryRepository.Add(category);
+        return _mapper.Map<CategoryDto>(category);
     }
 
-    public async Task Update(CategoryDto categoryDto)
+    public async Task<CategoryDto> Update(CategoryDto categoryDto)
     {
         Category? category = await _categoryRepository.GetByIdAsync(categoryDto.Id);
         if (category != null)
@@ -52,9 +51,10 @@ public class CategoryService : ICategoryService
             var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
             category.CategoryImage = ImageHelper.SaveImageWithName(categoryDto.CategoryFile, categoryDto.Name, rootPath);
             category.UpdatedAt = DateTime.Now;
-            _categoryRepository.Update(category);
-            await _categoryRepository.SaveChangesAsync();
+            category = await _categoryRepository.Update(category);
+            return _mapper.Map<CategoryDto>(category);
         }
+        return new CategoryDto();
     }
 
     public async Task Delete(int id)
@@ -64,8 +64,7 @@ public class CategoryService : ICategoryService
         {
             category.IsDeleted = true;
             category.UpdatedAt = DateTime.Now;
-            _categoryRepository.Update(category);
-            await _categoryRepository.SaveChangesAsync();
+            await _categoryRepository.Update(category);
         }
     }
 }
