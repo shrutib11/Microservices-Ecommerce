@@ -20,8 +20,14 @@
         "problemMatcher": []
       },
       {
+        "label": "Run APIGateWay",
+        "type": "shell",
+        "command": "dotnet run --project ./APIGateWay",
+        "problemMatcher": []
+      },
+      {
         "label": "Run All Services",
-        "dependsOn": ["Run CategoryService", "Run ProductService", "Run UserService"],
+        "dependsOn": ["Run CategoryService", "Run ProductService", "Run UserService", "Run APIGateWay"],
         "dependsOrder": "parallel"
       }
     ]
