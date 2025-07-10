@@ -34,7 +34,7 @@ namespace UserService.Application.Services
             else
                 newUser.ProfileImage = "uploads/default.png";
             newUser.CreatedAt = DateTime.Now;
-            return _userRepository.CreateUser(newUser) != null ? _mapper.Map<UserDto>(newUser) : throw new Exception("Failed to create user.");
+            return await _userRepository.CreateUser(newUser) != null ? _mapper.Map<UserDto>(newUser) : throw new Exception("Failed to create user.");
         }
 
         public async Task<List<UserDto>> GetAllUsers()
