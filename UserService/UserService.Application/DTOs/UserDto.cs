@@ -11,7 +11,6 @@ namespace UserService.Application.DTOs
 {
     public class UserDto
     {
-        // public List<User> Users { get; set; } = new List<User>();
         public int Id { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
@@ -22,7 +21,5 @@ namespace UserService.Application.DTOs
         public IFormFile? UserFile { get; set; } 
         public string PinCode { get; set; } = string.Empty;
         public string? ProfileImage { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime? UpdatedAt { get; set; }
     }
 }

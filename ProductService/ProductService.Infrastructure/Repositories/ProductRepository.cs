@@ -36,4 +36,11 @@ public class ProductRepository : IProductRepository
         return product;
     }
 
+    public async Task<List<Product>> GetProductsByCategoryIdAsync(int categoryId)
+    {
+        return await _context.Products
+            .Where(p => p.CategoryId == categoryId && !p.IsDeleted)
+            .ToListAsync();
+    }
+
 }

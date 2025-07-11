@@ -65,4 +65,10 @@ public class ProductService : IProductService
         await _productRepository.UpdateAsync(product);
         return true;
     }
+
+    public async Task<List<ProductDto>> GetProductsByCategoryIdAsync(int categoryId)
+    {
+        var products = await _productRepository.GetProductsByCategoryIdAsync(categoryId);
+        return _mapper.Map<List<ProductDto>>(products);
+    }
 }

@@ -1,7 +1,5 @@
 using AutoMapper;
 using Microservices.Shared;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using UserService.Application.DTOs;
 using UserService.Application.Interfaces;
 using UserService.Domain.Interfaces;
@@ -17,7 +15,6 @@ namespace UserService.Application.Services
         {
             _mapper = mapper;
             _userRepository = userRepository;
-            _imageHelper = new ImageHelper();
         }
 
         public async Task<UserDto> CreateUser(UserDto model)
@@ -33,18 +30,6 @@ namespace UserService.Application.Services
             return await _userRepository.CreateUser(newUser) != null ? _mapper.Map<UserDto>(newUser) : throw new Exception("Failed to create user.");
         }
 
-        public async Task<UserDto> CreateUser(UserDto model)
-        {
-            model.Password = PasswordHelper.HashPassword(model.Password);
-            User newUser = _mapper.Map<User>(model);
-            var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-            if (model.UserFile != null)
-                newUser.ProfileImage = ImageHelper.SaveImageWithName(model.UserFile, model.FirstName, rootPath);
-            else
-                newUser.ProfileImage = "/uploads/default.png";
-            newUser.CreatedAt = DateTime.Now;
-            return await _userRepository.CreateUser(newUser) != null ? _mapper.Map<UserDto>(newUser) : throw new Exception("Failed to create user.");
-        }
 
         public async Task<List<UserDto>> GetAllUsers()
         {

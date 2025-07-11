@@ -1,6 +1,7 @@
 using Microservices.Shared;
 using Microsoft.EntityFrameworkCore;
 using ProductService.Application.Interfaces;
+using ProductService.Application.Services;
 using ProductService.Domain.Interfaces;
 using ProductService.Infrastructure;
 using ProductService.Infrastructure.Repositories;
@@ -20,6 +21,11 @@ builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAss
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHttpClient<ICategoryServiceProxy, CategoryServiceProxy>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:7000"); // API Gateway URL
+});
+
 var app = builder.Build();
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
@@ -30,6 +36,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
