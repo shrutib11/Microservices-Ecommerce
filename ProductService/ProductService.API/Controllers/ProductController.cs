@@ -11,8 +11,10 @@ namespace ProductService.API.Controllers;
 public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
-    public ProductController(IProductService productService)
+    private readonly ICategoryServiceProxy _categoryServiceProxy;
+    public ProductController(IProductService productService, ICategoryServiceProxy categoryServiceProxy)
     {
+        _categoryServiceProxy = categoryServiceProxy;
         _productService = productService;
     }
 
@@ -81,5 +83,20 @@ public class ProductController : ControllerBase
         }
 
         return Ok(ApiResponseHelper.Success(HttpStatusCode.NoContent));
+    }
+
+    [HttpGet("GetByCategory/{categoryId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<APIResponse>> GetProductsByCategory(int CategoryId)
+    {
+        var categoryExists = await _categoryServiceProxy.CategoryExistsAsync(CategoryId);
+        if (!categoryExists)
+        {
+            throw new HttpStatusCodeException("Category not found", HttpStatusCode.NotFound);
+        }
+        var products = await _productService.GetProductsByCategoryIdAsync(CategoryId);
+        return Ok(ApiResponseHelper.Success(products, HttpStatusCode.OK));
     }
 }

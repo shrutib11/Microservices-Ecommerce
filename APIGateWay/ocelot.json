@@ -1,206 +1,135 @@
 {
-  "Routes": [
-    {
-      "DownstreamPathTemplate": "/api/category/GetAll",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
+    "Routes": [
         {
-          "Host": "localhost",
-          "Port": 5001
-        }
-      ],
-      "UpstreamPathTemplate": "/category/GetAll",
-      "UpstreamHttpMethod": [
-        "GET"
-      ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/category/{id}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/category/GetAll",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5001}
+            ],
+            "UpstreamPathTemplate": "/category/GetAll",
+            "UpstreamHttpMethod": ["GET"]
+        },
         {
-          "Host": "localhost",
-          "Port": 5001
-        }
-      ],
-      "UpstreamPathTemplate": "/category/{id}",
-      "UpstreamHttpMethod": [
-        "GET"
-      ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/category/Add",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/category/{id}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5001}
+            ],
+            "UpstreamPathTemplate": "/category/{id}",
+            "UpstreamHttpMethod": ["GET"]
+        },
         {
-          "Host": "localhost",
-          "Port": 5001
-        }
-      ],
-      "UpstreamPathTemplate": "/category/Add",
-      "UpstreamHttpMethod": [
-        "POST"
-      ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/category/Update",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/category/Add",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5001}
+            ],
+            "UpstreamPathTemplate": "/category/Add",
+            "UpstreamHttpMethod": ["POST"]
+        },
         {
-          "Host": "localhost",
-          "Port": 5001
-        }
-      ],
-      "UpstreamPathTemplate": "/category/Update",
-      "UpstreamHttpMethod": [
-        "PUT"
-      ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/category/Delete/{id}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/category/Update",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5001}
+            ],
+            "UpstreamPathTemplate": "/category/Update",
+            "UpstreamHttpMethod": ["PUT"]
+        },
         {
-          "Host": "localhost",
-          "Port": 5001
-        }
-      ],
-      "UpstreamPathTemplate": "/category/Delete/{id}",
-      "UpstreamHttpMethod": [
-        "PATCH"
-      ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/product/GetAll",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/category/Delete/{id}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5001}
+            ],
+            "UpstreamPathTemplate": "/category/Delete/{id}",
+            "UpstreamHttpMethod": ["PATCH"]
+        },
         {
-          "Host": "localhost",
-          "Port": 5002
-        }
-      ],
-      "UpstreamPathTemplate": "/product/GetAll",
-      "UpstreamHttpMethod": [
-        "GET"
-      ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/product/{id}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/product/GetAll",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5002}
+            ],
+            "UpstreamPathTemplate": "/product/GetAll",
+            "UpstreamHttpMethod": ["GET"]
+        },
         {
-          "Host": "localhost",
-          "Port": 5002
-        }
-      ],
-      "UpstreamPathTemplate": "/product/{id}",
-      "UpstreamHttpMethod": [
-        "GET"
-      ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/product/Add",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/product/{id}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5002}
+            ],
+            "UpstreamPathTemplate": "/product/{id}",
+            "UpstreamHttpMethod": ["GET"]
+        },
         {
-          "Host": "localhost",
-          "Port": 5002
-        }
-      ],
-      "UpstreamPathTemplate": "/product/Add",
-      "UpstreamHttpMethod": [
-        "POST"
-      ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/product/Update",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/product/Add",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5002}
+            ],
+            "UpstreamPathTemplate": "/product/Add",
+            "UpstreamHttpMethod": ["POST"]
+        },
         {
-          "Host": "localhost",
-          "Port": 5002
-        }
-      ],
-      "UpstreamPathTemplate": "/product/Update",
-      "UpstreamHttpMethod": [
-        "PUT"
-      ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/product/Delete/{id}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/product/Update",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5002}
+            ],
+            "UpstreamPathTemplate": "/product/Update",
+            "UpstreamHttpMethod": ["PUT"]
+        },
         {
-          "Host": "localhost",
-          "Port": 5002
-        }
-      ],
-      "UpstreamPathTemplate": "/product/Delete/{id}",
-      "UpstreamHttpMethod": [
-        "PATCH"
-      ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/User/GetAll",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/product/Delete/{id}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5002}
+            ],
+            "UpstreamPathTemplate": "/product/Delete/{id}",
+            "UpstreamHttpMethod": ["PATCH"]
+        },
         {
-          "Host": "localhost",
-          "Port": 5000
-        }
-      ],
-      "UpstreamPathTemplate": "/user/GetAllUsers",
-      "UpstreamHttpMethod": [
-        "GET",
-        "POST",
-        "PUT",
-        "DELETE"
-      ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/User/GetById/{id}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/product/GetByCategory/{categoryId}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5002}
+            ],
+            "UpstreamPathTemplate": "/product/GetByCategory/{categoryId}",
+            "UpstreamHttpMethod": ["GET"]
+        },
         {
-          "Host": "localhost",
-          "Port": 5000
-        }
-      ],
-      "UpstreamPathTemplate": "/user/{id}",
-      "UpstreamHttpMethod": [
-        "GET"
-      ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/User/Register",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/User/GetAll",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5000}
+            ],
+            "UpstreamPathTemplate": "/user/GetAllUsers",
+            "UpstreamHttpMethod": ["GET"]
+        },
         {
-          "Host": "localhost",
-          "Port": 5000
-        }
-      ],
-      "UpstreamPathTemplate": "/user/Add",
-      "UpstreamHttpMethod": [
-        "POST"
-      ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/User/Update",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/User/GetById/{id}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5000}
+            ],
+            "UpstreamPathTemplate": "/user/{id}",
+            "UpstreamHttpMethod": ["GET"]
+        },
         {
-          "Host": "localhost",
-          "Port": 5000
+            "DownstreamPathTemplate": "/api/User/Register",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5000}
+            ],
+            "UpstreamPathTemplate": "/user/Add",
+            "UpstreamHttpMethod": ["POST"]
+        },
+        {
+            "DownstreamPathTemplate": "/api/User/Update",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5000}
+            ],
+            "UpstreamPathTemplate": "/user/Update",
+            "UpstreamHttpMethod": ["PUT"]
+        },
+        {
+            "DownstreamPathTemplate": "/uploads/{file}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5002}
+            ],
+            "UpstreamPathTemplate": "/product-uploads/{file}",
+            "UpstreamHttpMethod": ["GET"]
         }
-      ],
-      "UpstreamPathTemplate": "/user/Update",
-      "UpstreamHttpMethod": [
-        "PUT"
-      ]
+    ],
+    "GlobalConfiguration": {
+        "BaseUrl": "http://localhost:7000"
     }
-  ],
-  "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:7000"
-  }
 }
