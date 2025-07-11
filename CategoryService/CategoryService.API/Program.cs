@@ -1,8 +1,11 @@
 using CategoryService.Application.Interfaces;
 using CategoryService.Application.Mappings;
+using CategoryService.Application.Validators;
 using CategoryService.Domain.Interfaces;
 using CategoryService.Infrastructure;
 using CategoryService.Infrastructure.Repositories;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microservices.Shared;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +21,11 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService.Application.Services.CategoryService>();
 
 builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation(options =>
+{
+    options.DisableDataAnnotationsValidation = true;
+});
+builder.Services.AddValidatorsFromAssemblyContaining<CategoryDtoValidator>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

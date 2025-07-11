@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CategoryService.API.Controllers;
 
-[ApiController]
+// [ApiController]
 [Route("api/[controller]")]
 public class CategoryController : ControllerBase
 {
@@ -34,9 +34,9 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
     {
-        var category = await _categoryService.GetCategoryById(id) ;
+        var category = await _categoryService.GetCategoryById(id);
         if (category == null || category.Id == 0)
-        { 
+        {
             return NotFound(ApiResponseHelper.Error("Category Not Found", HttpStatusCode.NotFound));
         }
         return Ok(ApiResponseHelper.Success(category, HttpStatusCode.OK));
@@ -45,8 +45,19 @@ public class CategoryController : ControllerBase
     [HttpPost("Add")]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Add([FromForm] CategoryDto categoryDto)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState
+                .Where(ms => ms.Value!.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToList()
+                );
+            return BadRequest(ApiResponseHelper.Error("Validation Failed", HttpStatusCode.BadRequest, errors));
+        }
         var category = await _categoryService.Add(categoryDto);
         return Ok(ApiResponseHelper.Success(category, HttpStatusCode.Created));
     }
@@ -57,6 +68,16 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update([FromForm] CategoryDto categoryDto)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState
+                .Where(ms => ms.Value!.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToList()
+                );
+            return BadRequest(ApiResponseHelper.Error("Validation Failed", HttpStatusCode.BadRequest, errors));
+        }
         var category = await _categoryService.GetCategoryById(categoryDto.Id);
         if (category == null)
         {

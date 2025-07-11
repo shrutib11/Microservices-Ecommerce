@@ -11,4 +11,6 @@ public class APIResponse
     public string? ErrorMessage { get; set; }
 
     public object? Result { get; set; }
+
+    public Dictionary<string, List<string>>? ValidationMessages { get; set; }
 }
