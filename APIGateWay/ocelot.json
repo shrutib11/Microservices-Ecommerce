@@ -41,6 +41,14 @@
             "UpstreamHttpMethod": ["PATCH"]
         },
         {
+            "DownstreamPathTemplate": "/uploads/{file}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5001}
+            ],
+            "UpstreamPathTemplate": "/category-uploads/{file}",
+            "UpstreamHttpMethod": ["GET"]
+        },
+        {
             "DownstreamPathTemplate": "/api/product/GetAll",
             "DownstreamScheme": "http",
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5002}
