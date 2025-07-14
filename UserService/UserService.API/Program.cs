@@ -1,8 +1,10 @@
 using System.Reflection;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microservices.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using UserService.API.Validators;
 using UserService.Application.Interfaces;
 using UserService.Application.Mappings;
 using UserService.Domain.Interfaces;
@@ -28,6 +30,12 @@ builder.Services.AddSwaggerGen(c =>
     {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "User MicroService", Version = "v1" });
     });
+
+builder.Services.AddFluentValidationAutoValidation(options =>
+{
+    options.DisableDataAnnotationsValidation = true;
+});
+builder.Services.AddValidatorsFromAssemblyContaining<UserDtoValidator>();
 
 var app = builder.Build();
 

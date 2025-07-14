@@ -57,6 +57,10 @@ namespace UserService.API.Controllers
             {
                 return Conflict(ApiResponseHelper.Error("User with this email already exists.", HttpStatusCode.Conflict));
             }
+            // if (!ModelState.IsValid)
+            // {
+            //      return BadRequest(ApiResponseHelper.Error("Validation Failed", HttpStatusCode.BadRequest, errors));
+            // }
             UserDto userModel = await _userService.CreateUser(model);
             return CreatedAtRoute("GetUserById", new { id = userModel.Id }, ApiResponseHelper.Success(userModel, HttpStatusCode.Created));
         }

@@ -17,8 +17,6 @@ var conn = builder.Configuration.GetConnectionString("ProductDb");
 builder.Services.AddDbContext<ProductDbContext>(options =>
     options.UseNpgsql(conn!));
 
-// Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation(options =>
 {
