@@ -37,9 +37,14 @@ public class CategoryService : ICategoryService
     {
         var category = _mapper.Map<Category>(categoryDto);
         var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-        category.CategoryImage = ImageHelper.SaveImageWithName(categoryDto.CategoryFile, categoryDto.Name, rootPath);
-        category = await _categoryRepository.Add(category);
-        return _mapper.Map<CategoryDto>(category);
+        if (categoryDto.CategoryFile != null)
+        {
+            category.CategoryImage = ImageHelper.SaveImageWithName(categoryDto.CategoryFile, categoryDto.Name, rootPath);
+            category = await _categoryRepository.Add(category);
+            return _mapper.Map<CategoryDto>(category);
+        }
+        else
+            throw new ArgumentNullException("Category Image cannot be null");
     }
 
     public async Task<CategoryDto> Update(CategoryDto categoryDto)
@@ -47,9 +52,19 @@ public class CategoryService : ICategoryService
         Category? category = await _categoryRepository.GetByIdAsync(categoryDto.Id);
         if (category != null)
         {
+            var existingImage = category.CategoryImage;
             _mapper.Map(categoryDto, category);
-            var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-            category.CategoryImage = ImageHelper.SaveImageWithName(categoryDto.CategoryFile, categoryDto.Name, rootPath);
+
+            if (categoryDto.CategoryFile != null)
+            {
+                var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                category.CategoryImage = ImageHelper.SaveImageWithName(categoryDto.CategoryFile, categoryDto.Name, rootPath);
+            }
+            else
+            {
+                category.CategoryImage = existingImage; 
+            }
+            
             category.UpdatedAt = DateTime.Now;
             category = await _categoryRepository.Update(category);
             return _mapper.Map<CategoryDto>(category);

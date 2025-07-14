@@ -2,8 +2,7 @@ using CategoryService.Application.Interfaces;
 using Grpc.Core;
 using Microservices.Shared.Protos;
 
-
-namespace CategoryService.API.GrpcServices;
+namespace CategoryService.API.GrpServices;
 
 public class CategoryGrpcService : Category.CategoryBase
 {

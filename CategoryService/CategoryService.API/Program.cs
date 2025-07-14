@@ -1,4 +1,4 @@
-using CategoryService.API.GrpcServices;
+using CategoryService.API.GrpServices;
 using CategoryService.Application.Interfaces;
 using CategoryService.Application.Mappings;
 using CategoryService.Application.Validators;
@@ -40,6 +40,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseStaticFiles();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -15,7 +15,7 @@ public class CategoryDtoValidator : AbstractValidator<CategoryDto>
             .NotEmpty().WithMessage("Please provide Category Description.")
             .MaximumLength(200);
 
-        RuleFor(x => x.CategoryFile)
-            .NotEmpty().WithMessage("Please Provide Category Image.");
+        // RuleFor(x => x.CategoryFile)
+        //     .NotEmpty().WithMessage("Please Provide Category Image.");
     }
 }
