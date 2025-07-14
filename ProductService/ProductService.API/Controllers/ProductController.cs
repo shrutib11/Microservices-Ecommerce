@@ -62,15 +62,15 @@ public class ProductController : ControllerBase
             return BadRequest(ApiResponseHelper.Error("Validation Failed", HttpStatusCode.BadRequest, errors));
         }
         
-        // var response = await _categoryClient.GetCategoryByIdAsync(new GetCategoryByIdRequest
-        // {
-        //     CategoryId = productDto.CategoryId
-        // });
+        var response = await _categoryClient.GetCategoryByIdAsync(new GetCategoryByIdRequest
+        {
+            CategoryId = productDto.CategoryId
+        });
 
-        // if (!response.IsFound)
-        // {
-        //     return BadRequest(ApiResponseHelper.Error("Category does not exist.", HttpStatusCode.BadRequest));
-        // }
+        if (!response.IsFound)
+        {
+            return BadRequest(ApiResponseHelper.Error("Category does not exist.", HttpStatusCode.BadRequest));
+        }
         var addedProduct = await _productService.AddProductAsync(productDto);
         return Ok(ApiResponseHelper.Success(addedProduct, HttpStatusCode.Created));
     }
@@ -92,14 +92,14 @@ public class ProductController : ControllerBase
                 );
             return BadRequest(ApiResponseHelper.Error("Validation Failed", HttpStatusCode.BadRequest, errors));
         }
-        // var response = await _categoryClient.GetCategoryByIdAsync(new GetCategoryByIdRequest
-        // {
-        //     CategoryId = productDto.CategoryId
-        // });
-        // if (!response.IsFound)
-        // {
-        //     return BadRequest(ApiResponseHelper.Error("Category does not exist.", HttpStatusCode.BadRequest));
-        // }
+        var response = await _categoryClient.GetCategoryByIdAsync(new GetCategoryByIdRequest
+        {
+            CategoryId = productDto.CategoryId
+        });
+        if (!response.IsFound)
+        {
+            return BadRequest(ApiResponseHelper.Error("Category does not exist.", HttpStatusCode.BadRequest));
+        }
         var updatedProduct = await _productService.UpdateProductAsync(productDto);
         if (updatedProduct == null)
         {
