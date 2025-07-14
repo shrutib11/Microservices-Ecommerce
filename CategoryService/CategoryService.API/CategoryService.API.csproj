@@ -5,6 +5,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.72.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.20" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.11">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -16,5 +21,6 @@
     <ProjectReference Include="..\CategoryService.Application\CategoryService.Application.csproj" />
     <ProjectReference Include="..\CategoryService.Infrastructure\CategoryService.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Microservices.Shared\Microservices.Shared.csproj" />
+    <Protobuf Include="..\..\Microservices.Shared\Protos\category.proto" GrpcServices="Server" />
   </ItemGroup>
 </Project>

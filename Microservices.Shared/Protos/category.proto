@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "Microservices.Shared.Protos";
+
+package category;
+
+service Category {
+  rpc GetCategoryById (GetCategoryByIdRequest) returns (GetCategoryByIdResponse);
+}
+
+message GetCategoryByIdRequest {
+  int32 categoryId = 1;
+}
+
+message GetCategoryByIdResponse {
+  int32 categoryId = 1;
+  string name = 2;
+  bool isFound = 3;
+}

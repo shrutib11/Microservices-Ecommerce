@@ -1,10 +1,16 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microservices.Shared;
+using Microservices.Shared.Protos;
 using Microsoft.EntityFrameworkCore;
 using ProductService.Application.Interfaces;
-using ProductService.Application.Services;
+using ProductService.Application.Validators;
 using ProductService.Domain.Interfaces;
 using ProductService.Infrastructure;
 using ProductService.Infrastructure.Repositories;
+
+
+AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
 var builder = WebApplication.CreateBuilder(args);
 var conn = builder.Configuration.GetConnectionString("ProductDb");
@@ -14,6 +20,11 @@ builder.Services.AddDbContext<ProductDbContext>(options =>
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation(options =>
+{
+    options.DisableDataAnnotationsValidation = true;
+});
+builder.Services.AddValidatorsFromAssemblyContaining<ProductDtoValidator>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService.Application.Services.ProductService>();
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()));
@@ -21,9 +32,10 @@ builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAss
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddHttpClient<ICategoryServiceProxy, CategoryServiceProxy>(client =>
+
+builder.Services.AddGrpcClient<Category.CategoryClient>(o =>
 {
-    client.BaseAddress = new Uri("http://localhost:7000"); // API Gateway URL
+    o.Address = new Uri("http://localhost:5003"); // Connects to gRPC port
 });
 
 var app = builder.Build();
