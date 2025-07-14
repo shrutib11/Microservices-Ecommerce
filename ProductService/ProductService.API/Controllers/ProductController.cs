@@ -1,21 +1,22 @@
 using System.Net;
 using Microservices.Shared;
+using Microservices.Shared.Protos;
 using Microsoft.AspNetCore.Mvc;
 using ProductService.Application.DTOs;
 using ProductService.Application.Interfaces;
 
 namespace ProductService.API.Controllers;
 
-[ApiController]
+// [ApiController]
 [Route("api/product")]
 public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
-    private readonly ICategoryServiceProxy _categoryServiceProxy;
-    public ProductController(IProductService productService, ICategoryServiceProxy categoryServiceProxy)
+    private readonly Category.CategoryClient _categoryClient;
+    public ProductController(IProductService productService, Category.CategoryClient categoryClient)
     {
-        _categoryServiceProxy = categoryServiceProxy;
         _productService = productService;
+        _categoryClient = categoryClient;
     }
 
     [HttpGet("GetAll")]
@@ -50,6 +51,26 @@ public class ProductController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> AddProduct([FromForm] ProductDto productDto)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState
+                .Where(ms => ms.Value!.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToList()
+                );
+            return BadRequest(ApiResponseHelper.Error("Validation Failed", HttpStatusCode.BadRequest, errors));
+        }
+        
+        // var response = await _categoryClient.GetCategoryByIdAsync(new GetCategoryByIdRequest
+        // {
+        //     CategoryId = productDto.CategoryId
+        // });
+
+        // if (!response.IsFound)
+        // {
+        //     return BadRequest(ApiResponseHelper.Error("Category does not exist.", HttpStatusCode.BadRequest));
+        // }
         var addedProduct = await _productService.AddProductAsync(productDto);
         return Ok(ApiResponseHelper.Success(addedProduct, HttpStatusCode.Created));
     }
@@ -61,6 +82,24 @@ public class ProductController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateProduct([FromForm] ProductDto productDto)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState
+                .Where(ms => ms.Value!.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToList()
+                );
+            return BadRequest(ApiResponseHelper.Error("Validation Failed", HttpStatusCode.BadRequest, errors));
+        }
+        // var response = await _categoryClient.GetCategoryByIdAsync(new GetCategoryByIdRequest
+        // {
+        //     CategoryId = productDto.CategoryId
+        // });
+        // if (!response.IsFound)
+        // {
+        //     return BadRequest(ApiResponseHelper.Error("Category does not exist.", HttpStatusCode.BadRequest));
+        // }
         var updatedProduct = await _productService.UpdateProductAsync(productDto);
         if (updatedProduct == null)
         {
@@ -89,14 +128,18 @@ public class ProductController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<APIResponse>> GetProductsByCategory(int CategoryId)
+    public async Task<ActionResult<APIResponse>> GetProductsByCategory(int categoryId)
     {
-        var categoryExists = await _categoryServiceProxy.CategoryExistsAsync(CategoryId);
-        if (!categoryExists)
+        var response = await _categoryClient.GetCategoryByIdAsync(new GetCategoryByIdRequest
         {
-            throw new HttpStatusCodeException("Category not found", HttpStatusCode.NotFound);
+            CategoryId = categoryId
+        });
+
+        if (!response.IsFound)
+        {
+            return BadRequest(ApiResponseHelper.Error("Category does not exist.", HttpStatusCode.BadRequest));
         }
-        var products = await _productService.GetProductsByCategoryIdAsync(CategoryId);
+        var products = await _productService.GetProductsByCategoryIdAsync(categoryId);
         return Ok(ApiResponseHelper.Success(products, HttpStatusCode.OK));
     }
 }
