@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option csharp_namespace = "Microservices.Shared.Protos";
+
+package product;
+
+service Product {
+  rpc GetProductsByCategoryId (GetProductsByCategoryIdRequest) returns (GetProductsByCategoryIdResponse);
+  rpc DeleteProduct (DeleteProductRequest) returns (DeleteProductResponse);
+}
+
+message GetProductsByCategoryIdRequest {
+  int32 categoryId = 1;
+}
+
+message ProductItem {
+  int32 productId = 1;
+  string name = 2;
+}
+
+message GetProductsByCategoryIdResponse {
+  repeated ProductItem products = 1;
+}
+
+message DeleteProductRequest {
+  int32 productId = 1;
+}
+
+message DeleteProductResponse {
+  bool success = 1;
+}

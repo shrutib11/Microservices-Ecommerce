@@ -8,6 +8,7 @@ using CategoryService.Infrastructure.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microservices.Shared;
+using Microservices.Shared.Protos;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +30,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
 builder.Services.AddGrpc();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddGrpcClient<Product.ProductClient>(o =>
+{
+    o.Address = new Uri("http://localhost:5004"); 
+});
 
 var app = builder.Build();
 
