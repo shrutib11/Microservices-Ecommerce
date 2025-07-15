@@ -22,5 +22,6 @@
     <ProjectReference Include="..\CategoryService.Infrastructure\CategoryService.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Microservices.Shared\Microservices.Shared.csproj" />
     <Protobuf Include="..\..\Microservices.Shared\Protos\category.proto" GrpcServices="Server" />
+    <Protobuf Include="..\..\Microservices.Shared\Protos\product.proto" GrpcServices="Client" />
   </ItemGroup>
 </Project>

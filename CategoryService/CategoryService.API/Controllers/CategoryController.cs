@@ -2,6 +2,7 @@ using System.Net;
 using CategoryService.Application.DTOs;
 using CategoryService.Application.Interfaces;
 using Microservices.Shared;
+using Microservices.Shared.Protos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CategoryService.API.Controllers;
@@ -11,12 +12,12 @@ namespace CategoryService.API.Controllers;
 public class CategoryController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
-    protected APIResponse _response;
+    private readonly Product.ProductClient _productClient;
 
-    public CategoryController(ICategoryService categoryService)
+    public CategoryController(ICategoryService categoryService, Product.ProductClient productClient)
     {
         _categoryService = categoryService;
-        _response = new();
+        _productClient = productClient;
     }
 
     [HttpGet("GetAll")]
@@ -97,6 +98,14 @@ public class CategoryController : ControllerBase
         if (category == null)
         {
             return NotFound(ApiResponseHelper.Error("Category Not Found", HttpStatusCode.NotFound));
+        }
+
+        var productsResponse = await _productClient.GetProductsByCategoryIdAsync(
+                new GetProductsByCategoryIdRequest { CategoryId = id });
+
+        foreach (var product in productsResponse.Products)
+        {
+            await _productClient.DeleteProductAsync(new DeleteProductRequest { ProductId = product.ProductId });
         }
         await _categoryService.Delete(id);
         return Ok(ApiResponseHelper.Success(null, HttpStatusCode.NoContent));

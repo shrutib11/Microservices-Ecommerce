@@ -3,6 +3,7 @@ using FluentValidation.AspNetCore;
 using Microservices.Shared;
 using Microservices.Shared.Protos;
 using Microsoft.EntityFrameworkCore;
+using ProductService.API.GrpcServices;
 using ProductService.Application.Interfaces;
 using ProductService.Application.Validators;
 using ProductService.Domain.Interfaces;
@@ -28,12 +29,13 @@ builder.Services.AddScoped<IProductService, ProductService.Application.Services.
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddGrpc();
 builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddGrpcClient<Category.CategoryClient>(o =>
 {
-    o.Address = new Uri("http://localhost:5003"); // Connects to gRPC port
+    o.Address = new Uri("http://localhost:5003"); 
 });
 
 var app = builder.Build();
@@ -52,5 +54,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGrpcService<ProductGrpcService>();
 
 app.Run();
