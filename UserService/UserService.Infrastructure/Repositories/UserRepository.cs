@@ -26,7 +26,7 @@ namespace UserService.Infrastructure.Repositories
 
         public async Task<List<User>> GetAllUsers()
         {
-            return await _context.Users.ToListAsync() ?? throw new Exception("An error occurred while retrieving users.");
+            return await _context.Users.OrderByDescending(user => user.CreatedAt).ToListAsync() ?? throw new Exception("An error occurred while retrieving users.");
         }
 
         public async Task<User> GetUserByEmailAysnc(string email)

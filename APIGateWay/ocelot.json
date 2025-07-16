@@ -117,7 +117,7 @@
             "DownstreamScheme": "http",
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5000}
             ],
-            "UpstreamPathTemplate": "/user/Add",
+            "UpstreamPathTemplate": "/user/register",
             "UpstreamHttpMethod": ["POST"]
         },
         {
@@ -134,6 +134,14 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5002}
             ],
             "UpstreamPathTemplate": "/product-uploads/{file}",
+            "UpstreamHttpMethod": ["GET"]
+        },
+        {
+            "DownstreamPathTemplate": "/uploads/{file}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 5000}
+            ],
+            "UpstreamPathTemplate": "/user-uploads/{file}",
             "UpstreamHttpMethod": ["GET"]
         }
     ],

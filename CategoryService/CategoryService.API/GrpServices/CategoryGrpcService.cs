@@ -17,10 +17,8 @@ public class CategoryGrpcService : Category.CategoryBase
     {
         var category = await _categoryService.GetCategoryById(request.CategoryId);
         if (category == null)
-        {
             return new GetCategoryByIdResponse { IsFound = false };
-        }
-
+            
         return new GetCategoryByIdResponse
         {
             CategoryId = category.Id,
