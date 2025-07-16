@@ -64,11 +64,12 @@ namespace UserService.Application.Services
             {
                 return null;
             }
+            string existingImage = currentUser.ProfileImage ?? "uploads/default.png";
             _mapper.Map(model, currentUser);
             var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
             if (model.UserFile == null)
             {
-                currentUser.ProfileImage = "/uploads/default.png";
+                currentUser.ProfileImage = existingImage;
             }
             else
             {

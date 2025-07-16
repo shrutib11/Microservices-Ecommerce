@@ -52,15 +52,10 @@ namespace UserService.API.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Register([FromForm] UserDto model)
         {
-
             if (_userService.IsUserExist(model.Email))
             {
                 return Conflict(ApiResponseHelper.Error("User with this email already exists.", HttpStatusCode.Conflict));
             }
-            // if (!ModelState.IsValid)
-            // {
-            //      return BadRequest(ApiResponseHelper.Error("Validation Failed", HttpStatusCode.BadRequest, errors));
-            // }
             UserDto userModel = await _userService.CreateUser(model);
             return CreatedAtRoute("GetUserById", new { id = userModel.Id }, ApiResponseHelper.Success(userModel, HttpStatusCode.Created));
         }
@@ -71,6 +66,7 @@ namespace UserService.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Update([FromForm] UserDto model)
         {
+            Console.WriteLine("hiii");
             UserDto? userModel = await _userService.UpdateUser(model);
             if (userModel == null)
             {

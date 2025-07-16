@@ -20,7 +20,6 @@ builder.Services.AddDbContext<CategoryServiceDbContext>(options => options.UseNp
 builder.Services.AddAutoMapper(typeof(CategoryProfile));
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService.Application.Services.CategoryService>();
-
 builder.Services.AddFluentValidationAutoValidation(options =>
 {
     options.DisableDataAnnotationsValidation = true;
@@ -48,7 +47,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseStaticFiles();
 app.UseAuthorization();
-
+app.UseStaticFiles();
 app.MapControllers();
 app.MapGrpcService<CategoryGrpcService>();
 
