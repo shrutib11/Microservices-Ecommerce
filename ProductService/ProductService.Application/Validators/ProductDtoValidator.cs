@@ -30,13 +30,13 @@ public class ProductDtoValidator : AbstractValidator<ProductDto>
 
         RuleFor(x => x.ProductImageFile)
             .Cascade(CascadeMode.Stop)
-            .NotNull().WithMessage("Product image file is required.")
             .Must(BeAValidImage).WithMessage("Only JPG, JPEG, PNG, and WEBP image files are allowed.")
-            .Must(f => f.Length <= 2 * 1024 * 1024).WithMessage("Image size must be less than or equal to 2MB.");
+            .Must(f => f.Length <= 2 * 1024 * 1024).WithMessage("Image size must be less than or equal to 2MB.")
+            .When(x => x.ProductImageFile != null);
 
     }
 
-    private bool BeAValidImage(IFormFile file)
+    private bool BeAValidImage(IFormFile? file)
     {
         if (file == null) return false;
 
