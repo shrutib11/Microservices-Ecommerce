@@ -48,9 +48,19 @@ public class ProductService : IProductService
         var product = await _productRepository.GetByIdAsync(Convert.ToInt32(productDto.Id));
         if (product == null) return null;
 
+        var existingImage = product.ProductImage;
         _mapper.Map(productDto, product);
-        var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-        product.ProductImage = ImageHelper.SaveImageWithName(productDto.ProductImageFile, productDto.Name, rootPath);
+
+        if (productDto.ProductImageFile == null)
+        {
+            product.ProductImage = existingImage;
+        }
+        else
+        {
+            var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            product.ProductImage = ImageHelper.SaveImageWithName(productDto.ProductImageFile, productDto.Name, rootPath);
+        }
+
         product.UpdatedAt = DateTime.Now;
         var updatedProduct = await _productRepository.UpdateAsync(product);
         return _mapper.Map<ProductDto>(updatedProduct);

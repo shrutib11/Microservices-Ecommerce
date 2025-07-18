@@ -10,6 +10,6 @@ public class ProductDto
     public decimal Price { get; set; }
     public int StockQuantity { get; set; }
     public int CategoryId { get; set; }
-    public IFormFile ProductImageFile { get; set; } = null!;
+    public IFormFile? ProductImageFile { get; set; }
     public string? ProductImage { get; set; }
 }
