@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "Microservices.Shared.Protos";
+
+package user;
+
+service User {
+  rpc GetUserById (GetUserByIdRequest) returns (GetUserByIdResponse);
+}
+
+message GetUserByIdRequest{
+    int32 userId = 1;
+}
+
+message GetUserByIdResponse{
+    int32 userId = 1;
+    bool isFound = 2;
+}

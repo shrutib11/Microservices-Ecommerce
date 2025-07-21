@@ -11,16 +11,16 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.20" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.4">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.11">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\UserService.Application\UserService.Application.csproj" />
-    <ProjectReference Include="..\UserService.Infrastructure\UserService.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Microservices.Shared\Microservices.Shared.csproj" />
-    <Protobuf Include="..\..\Microservices.Shared\Protos\user.proto" GrpcServices="Server" />
+    <ProjectReference Include="..\CartService.Infrastructure\CartService.Infrastructure.csproj" />
+    <ProjectReference Include="..\CartService.Application\CartService.Application.csproj" />
+    <Protobuf Include="..\..\Microservices.Shared\Protos\user.proto" GrpcServices="Client" />
   </ItemGroup>
 </Project>
