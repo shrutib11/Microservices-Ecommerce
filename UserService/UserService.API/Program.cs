@@ -2,8 +2,10 @@ using System.Reflection;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microservices.Shared;
+using Microservices.Shared.Protos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using UserService.API.GrpcServices;
 using UserService.API.Validators;
 using UserService.Application.Interfaces;
 using UserService.Application.Mappings;
@@ -36,6 +38,7 @@ builder.Services.AddFluentValidationAutoValidation(options =>
     options.DisableDataAnnotationsValidation = true;
 });
 builder.Services.AddValidatorsFromAssemblyContaining<UserDtoValidator>();
+builder.Services.AddGrpc();
 
 var app = builder.Build();
 
@@ -56,5 +59,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.UseMiddleware<ErrorHandlingMiddleware>();
+app.MapGrpcService<UserGrpcService>();
 
 app.Run();

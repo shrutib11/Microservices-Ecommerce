@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using CategoryService.Domain.Interfaces;
 using CategoryService.Domain.Models;
 using Microsoft.EntityFrameworkCore;

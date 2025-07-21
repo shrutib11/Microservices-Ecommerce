@@ -30,7 +30,6 @@ public class ProductGrpcService : Product.ProductBase
 
     public override async Task<DeleteProductResponse> DeleteProduct(DeleteProductRequest request, ServerCallContext context)
     {
-        Console.WriteLine("Hi");
         var result = await _productService.DeleteProductAsync(request.ProductId);
         return new DeleteProductResponse { Success = result };
     }

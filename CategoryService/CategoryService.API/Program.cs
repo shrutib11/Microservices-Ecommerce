@@ -47,7 +47,6 @@ if (app.Environment.IsDevelopment())
 }
 app.UseStaticFiles();
 app.UseAuthorization();
-app.UseStaticFiles();
 app.MapControllers();
 app.MapGrpcService<CategoryGrpcService>();
 
