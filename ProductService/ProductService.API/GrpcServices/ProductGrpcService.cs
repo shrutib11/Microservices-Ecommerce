@@ -15,7 +15,6 @@ public class ProductGrpcService : Product.ProductBase
 
     public override async Task<GetProductsByCategoryIdResponse> GetProductsByCategoryId(GetProductsByCategoryIdRequest request, ServerCallContext context)
     {
-        Console.WriteLine("Hello");
         var products = await _productService.GetProductsByCategoryIdAsync(request.CategoryId);
 
         var response = new GetProductsByCategoryIdResponse();
@@ -28,9 +27,26 @@ public class ProductGrpcService : Product.ProductBase
         return response;
     }
 
-    public override async Task<DeleteProductResponse> DeleteProduct(DeleteProductRequest request, ServerCallContext context)
+    public override async Task<DeleteProductResponse> DeleteProduct(ProductRequest request, ServerCallContext context)
     {
         var result = await _productService.DeleteProductAsync(request.ProductId);
         return new DeleteProductResponse { Success = result };
+    }
+
+    public override async Task<GetProductResponse> GetProductById(ProductRequest request, ServerCallContext context)
+    {
+        var product = await _productService.GetProductByIdAsync(request.ProductId);
+        if (product == null)
+            throw new RpcException(new Status(StatusCode.NotFound, "Product not found"));
+
+        return new GetProductResponse
+        {
+            Product = new ProductItem
+            {
+                ProductId = (int)product.Id!,
+                Name = product.Name,
+                Image = product.ProductImage
+            }
+        };
     }
 }

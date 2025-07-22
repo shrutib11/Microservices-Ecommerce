@@ -12,3 +12,24 @@ public class CartItemDto
 
     public decimal? PriceAtAddTime { get; set; }
 }
+
+public class CartItemResponseDto
+{
+    public CartItemDto CartItem { get; set; } = default!;
+
+    public ProductDto Product { get; set; } = default!;
+}
+
+public class ProductDto
+{
+    public string Name { get; set; } = null!;
+
+    public string ImageUrl { get; set; } = null!;
+}
+
+public class UpdateCartItemQuantityDto
+{
+    public int Id { get; set; }
+    
+    public decimal? Quantity { get; set; }
+}

@@ -7,17 +7,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CartService.API.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/cart")]
 public class CartServiceController : ControllerBase
 {
     private readonly ICartService _cartService;
 
     private readonly User.UserClient _userClient;
 
-    public CartServiceController(ICartService cartService, User.UserClient userClient)
+    private readonly Product.ProductClient _productClient;
+
+    public CartServiceController(ICartService cartService, User.UserClient userClient, Product.ProductClient productClient)
     {
         _cartService = cartService;
         _userClient = userClient;
+        _productClient = productClient;
     }
 
     [HttpPost("AddCart")]
@@ -104,7 +107,7 @@ public class CartServiceController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateQuantity([FromForm] CartItemDto cartItemDto)
+    public async Task<IActionResult> UpdateQuantity([FromForm] UpdateCartItemQuantityDto cartItemDto)
     {
         CartItemDto? dto = await _cartService.UpdateQuantity(cartItemDto);
         if (dto is null)
@@ -121,7 +124,29 @@ public class CartServiceController : ControllerBase
         List<CartItemDto>? cartItems = await _cartService.GetCartItemsByCartId(id);
         if (cartItems is null)
             return NotFound(ApiResponseHelper.Error("Cart Not Found", HttpStatusCode.NotFound));
-        return Ok(ApiResponseHelper.Success(cartItems, HttpStatusCode.OK));
+        
+        var responseList = new List<CartItemResponseDto>();
+
+        foreach (var item in cartItems)
+        {
+            var productResponse = await _productClient.GetProductByIdAsync(new ProductRequest
+            {
+                ProductId = item.ProductId
+            });
+
+            var productDto = new ProductDto
+            {
+                Name = productResponse.Product.Name,
+                ImageUrl = productResponse.Product.Image
+            };
+
+            responseList.Add(new CartItemResponseDto
+            {
+                CartItem = item,
+                Product = productDto
+            });
+        }
+        return Ok(ApiResponseHelper.Success(responseList, HttpStatusCode.OK));
     }
 
     [HttpPost("AddToCart")]

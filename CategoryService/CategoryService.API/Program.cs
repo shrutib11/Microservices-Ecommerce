@@ -32,12 +32,17 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddGrpcClient<Product.ProductClient>(o =>
 {
-    o.Address = new Uri("http://localhost:5004"); 
+    o.Address = new Uri("https://localhost:5004");
+});
+
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.HttpsPort = 4001;
 });
 
 var app = builder.Build();
 
-
+app.UseHttpsRedirection();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

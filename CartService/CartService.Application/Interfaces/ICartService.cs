@@ -14,7 +14,7 @@ public interface ICartService
 
     Task<bool> ClearCart(int cartId);
 
-    Task<CartItemDto?> UpdateQuantity(CartItemDto cartItemDto);
+    Task<CartItemDto?> UpdateQuantity(UpdateCartItemQuantityDto cartItemDto);
 
     Task<List<CartItemDto>?> GetCartItemsByCartId(int cartId);
 
