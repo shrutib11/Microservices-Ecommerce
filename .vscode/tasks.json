@@ -20,6 +20,12 @@
         "problemMatcher": []
       },
       {
+        "label": "Run CartService",
+        "type": "shell",
+        "command": "dotnet run --project ./CartService/CartService.API",
+        "problemMatcher": []
+      },
+      {
         "label": "Run APIGateWay",
         "type": "shell",
         "command": "dotnet run --project ./APIGateWay",
@@ -27,7 +33,7 @@
       },
       {
         "label": "Run All Services",
-        "dependsOn": ["Run CategoryService", "Run ProductService", "Run UserService", "Run APIGateWay"],
+        "dependsOn": ["Run CategoryService", "Run ProductService", "Run UserService", "Run APIGateWay", "Run CartService"],
         "dependsOrder": "parallel"
       }
     ]

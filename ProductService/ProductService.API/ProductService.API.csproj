@@ -22,8 +22,10 @@
   <ItemGroup>
     <ProjectReference Include="..\ProductService.Application\ProductService.Application.csproj" />
     <ProjectReference Include="..\ProductService.Infrastructure\ProductService.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Microservices.Shared\Microservices.Shared.csproj" />
     <Protobuf Include="..\..\Microservices.Shared\Protos\category.proto" GrpcServices="Client" />
     <Protobuf Include="..\..\Microservices.Shared\Protos\product.proto" GrpcServices="Server" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Microservices.Shared\Microservices.Shared.csproj" />
   </ItemGroup>
 </Project>

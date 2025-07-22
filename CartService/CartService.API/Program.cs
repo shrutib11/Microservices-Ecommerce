@@ -33,9 +33,18 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddGrpcClient<User.UserClient>(o =>
 {
-    o.Address = new Uri("http://localhost:5006"); 
+    o.Address = new Uri("https://localhost:5006"); 
 });
 
+builder.Services.AddGrpcClient<Product.ProductClient>(o =>
+{
+    o.Address = new Uri("https://localhost:5004");
+});
+
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.HttpsPort = 4005; 
+});
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -43,7 +52,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseHttpsRedirection();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseHttpsRedirection();
 

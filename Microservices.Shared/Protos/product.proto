@@ -6,7 +6,8 @@ package product;
 
 service Product {
   rpc GetProductsByCategoryId (GetProductsByCategoryIdRequest) returns (GetProductsByCategoryIdResponse);
-  rpc DeleteProduct (DeleteProductRequest) returns (DeleteProductResponse);
+  rpc DeleteProduct (ProductRequest) returns (DeleteProductResponse);
+  rpc GetProductById (ProductRequest) returns (GetProductResponse);
 }
 
 message GetProductsByCategoryIdRequest {
@@ -16,13 +17,18 @@ message GetProductsByCategoryIdRequest {
 message ProductItem {
   int32 productId = 1;
   string name = 2;
+  string image = 3;
 }
 
 message GetProductsByCategoryIdResponse {
   repeated ProductItem products = 1;
 }
 
-message DeleteProductRequest {
+message GetProductResponse {
+  ProductItem product = 1;
+}
+
+message ProductRequest {
   int32 productId = 1;
 }
 

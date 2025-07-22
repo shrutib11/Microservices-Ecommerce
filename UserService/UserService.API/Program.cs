@@ -39,9 +39,12 @@ builder.Services.AddFluentValidationAutoValidation(options =>
 });
 builder.Services.AddValidatorsFromAssemblyContaining<UserDtoValidator>();
 builder.Services.AddGrpc();
-
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.HttpsPort = 4000;
+});
 var app = builder.Build();
-
+app.UseHttpsRedirection();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

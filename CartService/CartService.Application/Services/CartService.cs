@@ -66,7 +66,7 @@ public class CartService : ICartService
         return false;
     }
 
-    public async Task<CartItemDto?> UpdateQuantity(CartItemDto cartItemDto)
+    public async Task<CartItemDto?> UpdateQuantity(UpdateCartItemQuantityDto cartItemDto)
     {
         CartItem? cartItem = await _cartItemRepository.GetCartItemById(cartItemDto.Id);
         if (cartItem is not null)

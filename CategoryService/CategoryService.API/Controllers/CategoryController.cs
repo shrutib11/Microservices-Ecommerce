@@ -105,7 +105,7 @@ public class CategoryController : ControllerBase
 
         foreach (var product in productsResponse.Products)
         {
-            await _productClient.DeleteProductAsync(new DeleteProductRequest { ProductId = product.ProductId });
+            await _productClient.DeleteProductAsync(new ProductRequest { ProductId = product.ProductId });
         }
         await _categoryService.Delete(id);
         return Ok(ApiResponseHelper.Success(null, HttpStatusCode.NoContent));

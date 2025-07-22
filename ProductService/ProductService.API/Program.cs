@@ -27,7 +27,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<ProductDtoValidator>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService.Application.Services.ProductService>();
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()));
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddGrpc();
 builder.Services.AddSwaggerGen();
@@ -35,11 +35,15 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddGrpcClient<Category.CategoryClient>(o =>
 {
-    o.Address = new Uri("http://localhost:5003"); 
+    o.Address = new Uri("https://localhost:5003");
+});
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.HttpsPort = 4002; 
 });
 
 var app = builder.Build();
-
+app.UseHttpsRedirection();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
