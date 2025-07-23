@@ -41,11 +41,11 @@
             }
         },
         {
-            "DownstreamPathTemplate": "/api/category/Delete/{id}",
+            "DownstreamPathTemplate": "/api/category/Delete/{hashedId}",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4001}
             ],
-            "UpstreamPathTemplate": "/category/Delete/{id}",
+            "UpstreamPathTemplate": "/category/Delete/{hashedId}",
             "UpstreamHttpMethod": ["PATCH"],
             "AuthenticationOptions": {
                 "AuthenticationProviderKey": "Bearer",
@@ -113,11 +113,11 @@
             }
         },
         {
-            "DownstreamPathTemplate": "/api/product/GetByCategory/{categoryId}",
+            "DownstreamPathTemplate": "/api/product/GetByCategory/{hashedId}",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4002}
             ],
-            "UpstreamPathTemplate": "/product/GetByCategory/{categoryId}",
+            "UpstreamPathTemplate": "/product/GetByCategory/{hashedId}",
             "UpstreamHttpMethod": ["GET"]
         },
         {

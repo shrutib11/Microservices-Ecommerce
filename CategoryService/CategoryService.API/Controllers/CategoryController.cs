@@ -2,6 +2,7 @@ using System.Net;
 using CategoryService.Application.DTOs;
 using CategoryService.Application.Interfaces;
 using Microservices.Shared;
+using Microservices.Shared.Helpers;
 using Microservices.Shared.Protos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,9 +36,13 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById(string id)
     {
-        var category = await _categoryService.GetCategoryById(id);
+        int? decodedId = id.DecodeToInt(HttpContext.RequestServices);
+        if (decodedId == null)
+            return NotFound(ApiResponseHelper.Error("Invalid Product ID", HttpStatusCode.NotFound));
+
+        var category = await _categoryService.GetCategoryById(decodedId.Value);
         if (category == null || category.Id == 0)
         {
             return NotFound(ApiResponseHelper.Error("Category Not Found", HttpStatusCode.NotFound));
@@ -93,26 +98,30 @@ public class CategoryController : ControllerBase
     }
 
     [Authorize(Roles = Roles.Admin)]
-    [HttpPatch("Delete/{id}")]
+    [HttpPatch("Delete/{hashedId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(string hashedId)
     {
-        var category = await _categoryService.GetCategoryById(id);
+        int? decodedId = hashedId.DecodeToInt(HttpContext.RequestServices);
+        if (decodedId == null)
+            return NotFound(ApiResponseHelper.Error("Invalid Product ID", HttpStatusCode.NotFound));
+
+        var category = await _categoryService.GetCategoryById(decodedId.Value);
         if (category == null)
         {
             return NotFound(ApiResponseHelper.Error("Category Not Found", HttpStatusCode.NotFound));
         }
 
         var productsResponse = await _productClient.GetProductsByCategoryIdAsync(
-                new GetProductsByCategoryIdRequest { CategoryId = id });
+                new GetProductsByCategoryIdRequest { CategoryId = decodedId.Value });
 
         foreach (var product in productsResponse.Products)
         {
             await _productClient.DeleteProductAsync(new ProductRequest { ProductId = product.ProductId });
         }
-        await _categoryService.Delete(id);
+        await _categoryService.Delete(decodedId.Value);
         return Ok(ApiResponseHelper.Success(null, HttpStatusCode.NoContent));
     }
 }

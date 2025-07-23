@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using HashidsNet;
 using Microservices.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +16,7 @@ using UserService.Domain.Interfaces;
 using UserService.Infrastructure;
 using UserService.Infrastructure.Repositories;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
-
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 
@@ -26,6 +24,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var conn = builder.Configuration.GetConnectionString("SupportDeskConnection");
 builder.Services.AddDbContext<UserServiceDbContext>(options => options.UseNpgsql(conn));
+
+builder.Services.AddSingleton<IHashids>(_ => new Hashids("mysecretsalt12345", 8));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService.Application.Services.UserService>();
 builder.Services.AddScoped<IJwtService, UserService.Application.Services.JwtService>();
@@ -47,7 +47,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
         };
     });
 

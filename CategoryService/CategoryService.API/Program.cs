@@ -8,6 +8,7 @@ using CategoryService.Infrastructure;
 using CategoryService.Infrastructure.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using HashidsNet;
 using Microservices.Shared;
 using Microservices.Shared.Protos;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 var conn = builder.Configuration.GetConnectionString("CategoryServiceDbConnection");
 builder.Services.AddDbContext<CategoryServiceDbContext>(options => options.UseNpgsql(conn));
 
+builder.Services.AddSingleton<IHashids>(_ => new Hashids("mysecretsalt12345", 8));  
 builder.Services.AddAutoMapper(typeof(CategoryProfile));
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService.Application.Services.CategoryService>();

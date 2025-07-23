@@ -1,5 +1,6 @@
 using System.Net;
 using Microservices.Shared;
+using Microservices.Shared.Helpers;
 using Microservices.Shared.Protos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,9 +37,12 @@ public class ProductController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<APIResponse>> GetProductById(int id)
+    public async Task<ActionResult<APIResponse>> GetProductById(string id)
     {
-        var product = await _productService.GetProductByIdAsync(id);
+        int? decodedId = id.DecodeToInt(HttpContext.RequestServices);
+        if (decodedId == null)
+            return NotFound(ApiResponseHelper.Error("Invalid Product ID", HttpStatusCode.NotFound));
+        var product = await _productService.GetProductByIdAsync(decodedId.Value);
         if (product == null || product.Id == 0)
         {
             return NotFound(ApiResponseHelper.Error("Product Not Found", HttpStatusCode.NotFound));
@@ -119,9 +123,12 @@ public class ProductController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> DeleteProduct(int id)
+    public async Task<IActionResult> DeleteProduct(string id)
     {
-        var isDeleted = await _productService.DeleteProductAsync(id);
+        int? decodedId = id.DecodeToInt(HttpContext.RequestServices);
+        if (decodedId == null)
+            return NotFound(ApiResponseHelper.Error("Invalid Product ID", HttpStatusCode.NotFound));
+        var isDeleted = await _productService.DeleteProductAsync(decodedId.Value);
         if (!isDeleted)
         {
             return NotFound(ApiResponseHelper.Error("Product not found", HttpStatusCode.NotFound));
@@ -130,22 +137,27 @@ public class ProductController : ControllerBase
         return Ok(ApiResponseHelper.Success(HttpStatusCode.NoContent));
     }
 
-    [HttpGet("GetByCategory/{categoryId}")]
+    [HttpGet("GetByCategory/{hashedId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<APIResponse>> GetProductsByCategory(int categoryId)
+    public async Task<ActionResult<APIResponse>> GetProductsByCategory(string hashedId)
     {
+        int? id = hashedId.DecodeToInt(HttpContext.RequestServices);
+
+        if (id == null)
+            return NotFound(ApiResponseHelper.Error("Invalid Product ID", HttpStatusCode.NotFound));
+
         var response = await _categoryClient.GetCategoryByIdAsync(new GetCategoryByIdRequest
         {
-            CategoryId = categoryId
+            CategoryId = id.Value
         });
 
         if (!response.IsFound)
         {
             return BadRequest(ApiResponseHelper.Error("Category does not exist.", HttpStatusCode.BadRequest));
         }
-        var products = await _productService.GetProductsByCategoryIdAsync(categoryId);
+        var products = await _productService.GetProductsByCategoryIdAsync(id.Value);
         return Ok(ApiResponseHelper.Success(products, HttpStatusCode.OK));
     }
 }

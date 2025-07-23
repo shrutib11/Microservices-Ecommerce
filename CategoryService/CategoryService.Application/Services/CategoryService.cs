@@ -3,7 +3,7 @@ using CategoryService.Application.DTOs;
 using CategoryService.Application.Interfaces;
 using CategoryService.Domain.Interfaces;
 using CategoryService.Domain.Models;
-using Microservices.Shared;
+using Microservices.Shared.Helpers;
 
 namespace CategoryService.Application.Services;
 

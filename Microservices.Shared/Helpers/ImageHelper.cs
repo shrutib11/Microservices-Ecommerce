@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 
-namespace Microservices.Shared;
+namespace Microservices.Shared.Helpers;
 
 public partial class ImageHelper
 {

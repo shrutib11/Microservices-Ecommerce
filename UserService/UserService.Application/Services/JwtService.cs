@@ -23,42 +23,37 @@ namespace UserService.Application.Services
             _audience = configuration["Jwt:Audience"] ?? "";
         }
         public string generateJwtToken(string email, string role, int userId)
-{
-    var tokenHandler = new JwtSecurityTokenHandler();
-    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key));
-    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-    var now = DateTime.UtcNow;
-    var expires = now.AddDays(7);
+            var now = DateTime.UtcNow;
+            var expires = now.AddDays(7);
 
-    var claims = new[]
-    {
-        new Claim("email", email),
-        new Claim("nameid", userId.ToString()),
-        new Claim("role", role),
-        new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        // DO NOT manually add Iat, Nbf, or Exp
-    };
+            var claims = new[]
+            {
+                new Claim("email", email),
+                new Claim("nameid", userId.ToString()),
+                new Claim("role", role),
+                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                // DO NOT manually add Iat, Nbf, or Exp
+            };
 
-    var token = new JwtSecurityToken(
-        issuer: _issuer,
-        audience: _audience,
-        claims: claims,
-        notBefore: now,
-        expires: expires,
-        signingCredentials: creds
-    );
+            var token = new JwtSecurityToken(
+                issuer: _issuer,
+                audience: _audience,
+                claims: claims,
+                notBefore: now,
+                expires: expires,
+                signingCredentials: creds
+            );
 
-    var tokenString = tokenHandler.WriteToken(token);
+            var tokenString = tokenHandler.WriteToken(token);
 
-    // Debug info (optional)
-    Console.WriteLine($"Issuer: {_issuer}");
-    Console.WriteLine($"Audience: {_audience}");
-    Console.WriteLine($"Expires (UTC): {expires}");
-
-    return tokenString;
-}
+            return tokenString;
+        }
 
         public ClaimsPrincipal? ValidateTokens(string token)
         {

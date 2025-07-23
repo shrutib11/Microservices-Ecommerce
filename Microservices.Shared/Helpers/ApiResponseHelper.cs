@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace Microservices.Shared;
+namespace Microservices.Shared.Helpers;
 
 public class ApiResponseHelper
 {
