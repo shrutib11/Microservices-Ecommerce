@@ -1,6 +1,7 @@
 using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using HashidsNet;
 using Microservices.Shared;
 using Microservices.Shared.Protos;
 using Microsoft.EntityFrameworkCore;
@@ -13,11 +14,12 @@ using ProductService.Domain.Interfaces;
 using ProductService.Infrastructure;
 using ProductService.Infrastructure.Repositories;
 
-
 AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
 var builder = WebApplication.CreateBuilder(args);
 var conn = builder.Configuration.GetConnectionString("ProductDb");
+
+builder.Services.AddSingleton<IHashids>(_ => new Hashids("mysecretsalt12345", 8));
 builder.Services.AddDbContext<ProductDbContext>(options =>
     options.UseNpgsql(conn!));
 
@@ -74,6 +76,7 @@ builder.Services.AddSwaggerGen(c =>
         Description = "Enter 'Bearer' followed by your JWT token.\n\nExample: Bearer eyJhbGciOiJIUzI1NiIsInR..."
     });
 
+    //tells Swagger that all endpoints will require this "Bearer" security scheme 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -94,7 +97,7 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 app.UseHttpsRedirection();
 app.UseMiddleware<ErrorHandlingMiddleware>();
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

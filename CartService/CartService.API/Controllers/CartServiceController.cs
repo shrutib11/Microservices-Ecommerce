@@ -1,7 +1,7 @@
 using System.Net;
 using CartService.Application.DTOs;
 using CartService.Application.Interfaces;
-using Microservices.Shared;
+using Microservices.Shared.Helpers;
 using Microservices.Shared.Protos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -81,9 +81,12 @@ public class CartServiceController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> DeleteCartItem(int id)
+    public async Task<IActionResult> DeleteCartItem(string id)
     {
-        var result = await _cartService.DeleteCartItem(id);
+        int? decodedId = id.DecodeToInt(HttpContext.RequestServices);
+        if (decodedId == null)
+            return NotFound(ApiResponseHelper.Error("Invalid Product ID", HttpStatusCode.NotFound));
+        var result = await _cartService.DeleteCartItem(decodedId.Value);
         if (result)
             return Ok(ApiResponseHelper.Success(null, HttpStatusCode.NoContent));
         else
@@ -170,6 +173,6 @@ public class CartServiceController : ControllerBase
         if (dto is null)
             return NotFound(ApiResponseHelper.Error("Cart Not Found", HttpStatusCode.NotFound));
         else
-            return Ok(ApiResponseHelper.Success(dto, HttpStatusCode.OK));
+            return Ok(ApiResponseHelper.Success(dto, HttpStatusCode.Created));
     }
 }

@@ -1,7 +1,7 @@
-
 using System.Net;
 using AutoMapper;
 using Microservices.Shared;
+using Microservices.Shared.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -62,9 +62,12 @@ namespace UserService.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDto))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetId(int id)
+        public async Task<IActionResult> GetId(string id)
         {
-            UserDto? model = await _userService.GetUserById(id);
+            int? decodedId = id.DecodeToInt(HttpContext.RequestServices);
+            if (decodedId == null)
+                return NotFound(ApiResponseHelper.Error("Invalid Product ID", HttpStatusCode.NotFound));
+            UserDto? model = await _userService.GetUserById(decodedId.Value);
             if (model == null || model.Id == 0)
             {
                 return NotFound(ApiResponseHelper.Error("User Not Found", HttpStatusCode.NotFound));

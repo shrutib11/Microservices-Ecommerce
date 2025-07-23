@@ -6,6 +6,7 @@ using CartService.Infrastructure;
 using CartService.Infrastructure.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using HashidsNet;
 using Microservices.Shared;
 using Microservices.Shared.Protos;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,8 @@ builder.Services.AddControllers();
 var conn = builder.Configuration.GetConnectionString("CheckoutDb");
 builder.Services.AddDbContext<CartServiceDbContext>(options =>
     options.UseNpgsql(conn!));
+
+builder.Services.AddSingleton<IHashids>(_ => new Hashids("mysecretsalt12345", 8));
 
 builder.Services.AddAutoMapper(typeof(CartProfile));
 builder.Services.AddScoped<ICartRepository, CartRepository>();

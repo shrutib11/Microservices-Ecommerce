@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 using System.Net;
+using Microservices.Shared.Helpers;
 
 namespace Microservices.Shared;
 

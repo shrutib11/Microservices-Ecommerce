@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microservices.Shared;
+using Microservices.Shared.Helpers;
 using UserService.Application.DTOs;
 using UserService.Application.Interfaces;
 using UserService.Domain.Interfaces;
