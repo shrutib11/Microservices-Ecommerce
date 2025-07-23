@@ -27,6 +27,7 @@ namespace UserService.Application.Services
             else
                 newUser.ProfileImage = "uploads/default.png";
             newUser.CreatedAt = DateTime.Now;
+            newUser.Role = "User";
             return await _userRepository.CreateUser(newUser) != null ? _mapper.Map<UserDto>(newUser) : throw new Exception("Failed to create user.");
         }
 
@@ -35,6 +36,16 @@ namespace UserService.Application.Services
         {
             List<User> users = await _userRepository.GetAllUsers();
             return _mapper.Map<List<UserDto>>(users);
+        }
+
+        public async Task<UserDto?> GetUserByEmail(string email)
+        {
+            User user = await _userRepository.GetUserByEmailAysnc(email);
+            if (user.Id == 0)
+            {
+                return null;
+            }
+            return _mapper.Map<UserDto>(user);
         }
 
         public async Task<UserDto?> GetUserById(int id)
@@ -55,15 +66,7 @@ namespace UserService.Application.Services
 
         public async Task<UserDto?> UpdateUser(UserDto model)
         {
-            User? currentUser = await _userRepository.GetUserByIdSysnc(model.Id);
-            if (model.Password != null)
-            {
-                model.Password = PasswordHelper.HashPassword(model.Password);
-            }
-            if (currentUser == null)
-            {
-                return null;
-            }
+            User currentUser = await _userRepository.GetUserByIdSysnc(model.Id) ?? new User();
             string existingImage = currentUser.ProfileImage ?? "uploads/default.png";
             _mapper.Map(model, currentUser);
             var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
@@ -80,5 +83,6 @@ namespace UserService.Application.Services
             UserDto userModel = _mapper.Map<UserDto>(await _userRepository.UpdateUserAsync(currentUser));
             return userModel ?? throw new Exception("Failed to update user.");
         }
+
     }
 }

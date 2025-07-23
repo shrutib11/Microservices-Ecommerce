@@ -1,6 +1,7 @@
 using System.Net;
 using Microservices.Shared;
 using Microservices.Shared.Protos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductService.Application.DTOs;
 using ProductService.Application.Interfaces;
@@ -19,6 +20,7 @@ public class ProductController : ControllerBase
         _categoryClient = categoryClient;
     }
 
+    [AllowAnonymous]
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -29,6 +31,7 @@ public class ProductController : ControllerBase
         return Ok(ApiResponseHelper.Success(products, HttpStatusCode.OK));
     }
 
+    
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -45,6 +48,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost("Add")]
+    [Authorize(Roles = Roles.Admin)]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -76,6 +80,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPut("Update")]
+    [Authorize(Roles = Roles.Admin)]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -110,6 +115,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPatch("Delete/{id}")]
+    [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

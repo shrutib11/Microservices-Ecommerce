@@ -22,7 +22,11 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4001}
             ],
             "UpstreamPathTemplate": "/category/Add",
-            "UpstreamHttpMethod": ["POST"]
+            "UpstreamHttpMethod": ["POST"],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
         },
         {
             "DownstreamPathTemplate": "/api/category/Update",
@@ -30,7 +34,11 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4001}
             ],
             "UpstreamPathTemplate": "/category/Update",
-            "UpstreamHttpMethod": ["PUT"]
+            "UpstreamHttpMethod": ["PUT"],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
         },
         {
             "DownstreamPathTemplate": "/api/category/Delete/{id}",
@@ -38,7 +46,11 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4001}
             ],
             "UpstreamPathTemplate": "/category/Delete/{id}",
-            "UpstreamHttpMethod": ["PATCH"]
+            "UpstreamHttpMethod": ["PATCH"],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
         },
         {
             "DownstreamPathTemplate": "/uploads/{file}",
@@ -70,7 +82,11 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4002}
             ],
             "UpstreamPathTemplate": "/product/Add",
-            "UpstreamHttpMethod": ["POST"]
+            "UpstreamHttpMethod": ["POST"],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
         },
         {
             "DownstreamPathTemplate": "/api/product/Update",
@@ -78,7 +94,11 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4002}
             ],
             "UpstreamPathTemplate": "/product/Update",
-            "UpstreamHttpMethod": ["PUT"]
+            "UpstreamHttpMethod": ["PUT"],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
         },
         {
             "DownstreamPathTemplate": "/api/product/Delete/{id}",
@@ -86,7 +106,11 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4002}
             ],
             "UpstreamPathTemplate": "/product/Delete/{id}",
-            "UpstreamHttpMethod": ["PATCH"]
+            "UpstreamHttpMethod": ["PATCH"],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
         },
         {
             "DownstreamPathTemplate": "/api/product/GetByCategory/{categoryId}",
@@ -102,7 +126,11 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4000}
             ],
             "UpstreamPathTemplate": "/user/GetAllUsers",
-            "UpstreamHttpMethod": ["GET"]
+            "UpstreamHttpMethod": ["GET"],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
         },
         {
             "DownstreamPathTemplate": "/api/User/GetById/{id}",
@@ -121,12 +149,24 @@
             "UpstreamHttpMethod": ["POST"]
         },
         {
+            "DownstreamPathTemplate": "/api/user/login",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4000}
+            ],
+            "UpstreamPathTemplate": "/user/login",
+            "UpstreamHttpMethod": ["POST"]
+        },
+        {
             "DownstreamPathTemplate": "/api/User/Update",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4000}
             ],
             "UpstreamPathTemplate": "/user/Update",
-            "UpstreamHttpMethod": ["PUT"]
+            "UpstreamHttpMethod": ["PUT"],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
         },
         {
             "DownstreamPathTemplate": "/uploads/{file}",
