@@ -2,6 +2,7 @@
 using System.Net;
 using AutoMapper;
 using Microservices.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Application.DTOs;
@@ -17,13 +18,38 @@ namespace UserService.API.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
-        public UserController(IUserService userService, IMapper mapper)
+
+        private readonly IJwtService _jwtService;
+        public UserController(IUserService userService, IMapper mapper, IJwtService jwtService)
         {
             _userService = userService;
             _mapper = mapper;
+            _jwtService = jwtService;
         }
 
+        [AllowAnonymous]
+        [Consumes("multipart/form-data")]
+        [HttpPost("Login", Name = "LoginUser")]
+        public async Task<IActionResult> Login([FromForm] LoginDto loginData)
+        {
+            UserDto? user = await _userService.GetUserByEmail(loginData.email);
+            if (user == null || user.Id == 0)
+            {
+                return NotFound(ApiResponseHelper.Error("User Not Found", HttpStatusCode.NotFound));
+            }
+            if (!PasswordHelper.VerifyPassword(loginData.password, user.Password))
+            {
+                return Unauthorized(ApiResponseHelper.Error("Invalid Password", HttpStatusCode.Unauthorized));
+            }
+            string token = _jwtService.generateJwtToken(user.Email, user.Role!, user.Id);
+            var result = new{ token , user };
+            return Ok(ApiResponseHelper.Success(result, HttpStatusCode.OK));
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetAll", Name = "GetAllUsers")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserDto>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll()
@@ -31,6 +57,7 @@ namespace UserService.API.Controllers
             return Ok(ApiResponseHelper.Success(await _userService.GetAllUsers(), HttpStatusCode.OK));
         }
 
+        [AllowAnonymous]
         [HttpGet("GetById/{id}", Name = "GetUserById")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDto))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -45,6 +72,7 @@ namespace UserService.API.Controllers
             return Ok(ApiResponseHelper.Success(model, HttpStatusCode.OK));
         }
 
+        [AllowAnonymous]
         [HttpPost("Register", Name = "RegisterUser")]
         [Consumes("multipart/form-data")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDto))]
@@ -60,9 +88,12 @@ namespace UserService.API.Controllers
             return CreatedAtRoute("GetUserById", new { id = userModel.Id }, ApiResponseHelper.Success(userModel, HttpStatusCode.Created));
         }
 
+        [Authorize(Roles = "Admin,User")]
         [HttpPut("Update", Name = "UpdateUser")]
         [Consumes("multipart/form-data")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Update([FromForm] UserDto model)
         {

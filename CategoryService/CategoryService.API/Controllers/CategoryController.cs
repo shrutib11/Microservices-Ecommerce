@@ -3,11 +3,11 @@ using CategoryService.Application.DTOs;
 using CategoryService.Application.Interfaces;
 using Microservices.Shared;
 using Microservices.Shared.Protos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CategoryService.API.Controllers;
 
-// [ApiController]
 [Route("api/[controller]")]
 public class CategoryController : ControllerBase
 {
@@ -21,6 +21,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet("GetAll")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll()
@@ -30,6 +31,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -43,6 +45,7 @@ public class CategoryController : ControllerBase
         return Ok(ApiResponseHelper.Success(category, HttpStatusCode.OK));
     }
 
+    [Authorize(Roles = Roles.Admin)]
     [HttpPost("Add")]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -63,6 +66,7 @@ public class CategoryController : ControllerBase
         return Ok(ApiResponseHelper.Success(category, HttpStatusCode.Created));
     }
 
+    [Authorize(Roles = Roles.Admin)]
     [HttpPut("Update")]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -88,6 +92,7 @@ public class CategoryController : ControllerBase
         return Ok(ApiResponseHelper.Success(category, HttpStatusCode.OK));
     }
 
+    [Authorize(Roles = Roles.Admin)]
     [HttpPatch("Delete/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

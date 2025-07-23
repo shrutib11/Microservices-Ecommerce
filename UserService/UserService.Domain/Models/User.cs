@@ -42,6 +42,8 @@ namespace UserService.Domain.Models
         [MaxLength(200)]
         public string? ProfileImage { get; set; }
 
+        public string? Role { get; set; } 
+
         [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
