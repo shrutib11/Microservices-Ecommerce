@@ -193,6 +193,22 @@
             "UpstreamHttpMethod": ["GET"]
         },
         {
+            "DownstreamPathTemplate": "/api/cart/AddCart",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4005}
+            ],
+            "UpstreamPathTemplate": "/cart/createcart",
+            "UpstreamHttpMethod": ["Post"]
+        },
+        {
+            "DownstreamPathTemplate": "/api/cart/by-user/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4005}
+            ],
+            "UpstreamPathTemplate": "/cart/GetUserCart/{id}",
+            "UpstreamHttpMethod": ["GET"]
+        },
+        {
             "DownstreamPathTemplate": "/api/cart/AddToCart",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4005}
