@@ -21,8 +21,9 @@ public class ProductController : ControllerBase
         _categoryClient = categoryClient;
     }
 
-    [AllowAnonymous]
+    
     [HttpGet("GetAll")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -34,6 +35,7 @@ public class ProductController : ControllerBase
 
     
     [HttpGet("{id}")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

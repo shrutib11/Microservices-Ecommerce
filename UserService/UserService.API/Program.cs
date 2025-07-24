@@ -24,7 +24,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var conn = builder.Configuration.GetConnectionString("SupportDeskConnection");
 builder.Services.AddDbContext<UserServiceDbContext>(options => options.UseNpgsql(conn));
-
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<IHashids>(_ => new Hashids("mysecretsalt12345", 8));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService.Application.Services.UserService>();
@@ -35,6 +35,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "User MicroService", Version = "v1" });
     });
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(option =>
@@ -95,6 +96,15 @@ builder.Services.AddHttpsRedirection(options =>
 {
     options.HttpsPort = 4000;
 });
+
+// builder.Services.AddStackExchangeRedisCache(options =>
+// {
+//     options.Configuration = "localhost:6379"; 
+//     options.InstanceName = "Jwt:";
+// });
+
+
+
 var app = builder.Build();
 app.UseHttpsRedirection();
 if (app.Environment.IsDevelopment())
@@ -108,14 +118,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
+// app.UseMiddleware<JtiValidatorMiddleware>();
 app.UseAuthorization();
 app.UseStaticFiles();
 app.UseAuthorization();
 
 app.MapControllers();
-app.UseMiddleware<ErrorHandlingMiddleware>();
+
 app.MapGrpcService<UserGrpcService>();
 
 app.Run();

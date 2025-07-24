@@ -121,6 +121,14 @@
             "UpstreamHttpMethod": ["GET"]
         },
         {
+            "DownstreamPathTemplate": "/uploads/{file}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4002}
+            ],
+            "UpstreamPathTemplate": "/product-uploads/{file}",
+            "UpstreamHttpMethod": ["GET"]
+        },
+        {
             "DownstreamPathTemplate": "/api/User/GetAll",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4000}
@@ -171,18 +179,18 @@
         {
             "DownstreamPathTemplate": "/uploads/{file}",
             "DownstreamScheme": "https",
-            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4002}
-            ],
-            "UpstreamPathTemplate": "/product-uploads/{file}",
-            "UpstreamHttpMethod": ["GET"]
-        },
-        {
-            "DownstreamPathTemplate": "/uploads/{file}",
-            "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4000}
             ],
             "UpstreamPathTemplate": "/user-uploads/{file}",
             "UpstreamHttpMethod": ["GET"]
+        },
+        {
+            "DownstreamPathTemplate": "/api/User/logout",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4000}
+            ],
+            "UpstreamPathTemplate": "/user/logout",
+            "UpstreamHttpMethod": ["POST"]
         },
         {
             "DownstreamPathTemplate": "/api/cart/by-id/{id}",

@@ -1,10 +1,15 @@
 using System.Net;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using AutoMapper;
+using Google.Protobuf.WellKnownTypes;
 using Microservices.Shared;
 using Microservices.Shared.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using UserService.Application.DTOs;
 using UserService.Application.Interfaces;
 using UserService.Domain.Models;
@@ -19,12 +24,15 @@ namespace UserService.API.Controllers
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
 
+        private readonly IDistributedCache _cache;
+
         private readonly IJwtService _jwtService;
-        public UserController(IUserService userService, IMapper mapper, IJwtService jwtService)
+        public UserController(IUserService userService, IMapper mapper, IJwtService jwtService, IDistributedCache cache)
         {
             _userService = userService;
             _mapper = mapper;
             _jwtService = jwtService;
+            _cache = cache;
         }
 
         [AllowAnonymous]
@@ -42,7 +50,7 @@ namespace UserService.API.Controllers
                 return Unauthorized(ApiResponseHelper.Error("Invalid Password", HttpStatusCode.Unauthorized));
             }
             string token = _jwtService.generateJwtToken(user.Email, user.Role!, user.Id);
-            var result = new{ token , user };
+            var result = new { token, user };
             return Ok(ApiResponseHelper.Success(result, HttpStatusCode.OK));
         }
 
@@ -116,7 +124,7 @@ namespace UserService.API.Controllers
             {
                 return BadRequest(ApiResponseHelper.Error("Patch document cannot be null", HttpStatusCode.BadRequest));
             }
-            
+
             UserDto? userDto = await _userService.GetUserById(id);
             User user = _mapper.Map<User>(userDto);
 
@@ -132,6 +140,22 @@ namespace UserService.API.Controllers
                 return BadRequest(ApiResponseHelper.Error("Invalid patch operation", HttpStatusCode.BadRequest));
             }
             return Ok(ApiResponseHelper.Success(user, HttpStatusCode.OK));
+        }
+
+        [HttpPost("logout")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Logout()
+        {
+            var useremail = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (string.IsNullOrEmpty(useremail))
+            {
+                return Unauthorized(ApiResponseHelper.Error("User not authenticated.", HttpStatusCode.Unauthorized));
+            }
+
+           // await _cache.RemoveAsync($"user:{useremail}:jti");
+
+            return Ok("Logged out successfully.");
         }
     }
 }
