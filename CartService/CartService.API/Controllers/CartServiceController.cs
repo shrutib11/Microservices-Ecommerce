@@ -3,11 +3,13 @@ using CartService.Application.DTOs;
 using CartService.Application.Interfaces;
 using Microservices.Shared.Helpers;
 using Microservices.Shared.Protos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CartService.API.Controllers;
 
 [Route("api/cart")]
+[Authorize]
 public class CartServiceController : ControllerBase
 {
     private readonly ICartService _cartService;
@@ -71,9 +73,8 @@ public class CartServiceController : ControllerBase
 
         CartDto? cart = await _cartService.GetUserCart(userId);
         if (cart is null || cart.Id == 0)
-        {
             return NotFound(ApiResponseHelper.Error("Cart Not Found", HttpStatusCode.NotFound));
-        }
+        
         return Ok(ApiResponseHelper.Success(cart, HttpStatusCode.OK));
     }
 

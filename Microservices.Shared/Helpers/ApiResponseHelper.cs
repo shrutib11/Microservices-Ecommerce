@@ -14,9 +14,7 @@ public class ApiResponseHelper
         };
     }
 
-    public static APIResponse Error(string errorMessage,
-    HttpStatusCode statusCode = HttpStatusCode.InternalServerError,
-    Dictionary<string, List<string>>? ValidationMessages = null)
+    public static APIResponse Error(string errorMessage, HttpStatusCode statusCode = HttpStatusCode.InternalServerError, Dictionary<string, List<string>>? ValidationMessages = null)
     {
         return new APIResponse
         {

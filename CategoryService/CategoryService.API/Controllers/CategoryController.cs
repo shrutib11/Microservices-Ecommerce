@@ -6,6 +6,7 @@ using Microservices.Shared.Helpers;
 using Microservices.Shared.Protos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace CategoryService.API.Controllers;
 
@@ -19,6 +20,16 @@ public class CategoryController : ControllerBase
     {
         _categoryService = categoryService;
         _productClient = productClient;
+    }
+
+    private static Dictionary<string, List<string>> GetModelErrors(ModelStateDictionary ModelState)
+    {
+        return ModelState
+                .Where(ms => ms.Value!.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToList()
+                );
     }
 
     [HttpGet("GetAll")]
@@ -59,12 +70,7 @@ public class CategoryController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            var errors = ModelState
-                .Where(ms => ms.Value!.Errors.Count > 0)
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToList()
-                );
+            var errors = GetModelErrors(ModelState);
             return BadRequest(ApiResponseHelper.Error("Validation Failed", HttpStatusCode.BadRequest, errors));
         }
         var category = await _categoryService.Add(categoryDto);
@@ -80,12 +86,7 @@ public class CategoryController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            var errors = ModelState
-                .Where(ms => ms.Value!.Errors.Count > 0)
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToList()
-                );
+            Dictionary<string, List<string>> errors = GetModelErrors(ModelState);
             return BadRequest(ApiResponseHelper.Error("Validation Failed", HttpStatusCode.BadRequest, errors));
         }
         var category = await _categoryService.GetCategoryById(categoryDto.Id);
