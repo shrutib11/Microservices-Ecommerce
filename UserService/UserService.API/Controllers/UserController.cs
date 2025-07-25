@@ -1,8 +1,5 @@
 using System.Net;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using AutoMapper;
-using Google.Protobuf.WellKnownTypes;
 using Microservices.Shared;
 using Microservices.Shared.Helpers;
 using Microservices.Shared.Models;
@@ -15,6 +12,7 @@ using Microsoft.Extensions.Caching.Memory;
 using UserService.Application.DTOs;
 using UserService.Application.Interfaces;
 using UserService.Domain.Models;
+using System.Security.Claims;
 
 
 namespace UserService.API.Controllers
@@ -25,17 +23,14 @@ namespace UserService.API.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
-
-        private readonly IDistributedCache _cache;
         private readonly IJwtService _jwtService;
         private IConfiguration _configuration;
-        public UserController(IUserService userService, IConfiguration configuration, IMapper mapper, IJwtService jwtService, IDistributedCache cache)
+        public UserController(IUserService userService, IConfiguration configuration, IMapper mapper, IJwtService jwtService)
         {
             _userService = userService;
             _mapper = mapper;
             _configuration = configuration;
             _jwtService = jwtService;
-            _cache = cache;
         }
 
         [AllowAnonymous]
@@ -53,7 +48,7 @@ namespace UserService.API.Controllers
                 return Unauthorized(ApiResponseHelper.Error("Invalid Password", HttpStatusCode.Unauthorized));
             }
             string token = _jwtService.generateJwtToken(user.Email, user.Role!, user.Id);
-            var result = new { token, user };
+            var result = new{ token , user };
             return Ok(ApiResponseHelper.Success(result, HttpStatusCode.OK));
         }
 
@@ -70,15 +65,15 @@ namespace UserService.API.Controllers
 
 
         [HttpPost("sendEmail")]
-        public async Task<IActionResult> SendEmail([FromBody] EmailRequestModel model)
+        public async Task<IActionResult> SendEmail( EmailRequestModel model)
         {
-            UserDto? isUserExist = await _userService.GetUserByEmail(model.email);
+            UserDto? isUserExist = await _userService.GetUserByEmail(model.Email);
             if (isUserExist == null)
             {
                 return NotFound(ApiResponseHelper.Error("User not Exist !! Register First !! ", HttpStatusCode.NotFound));
             }
-            string link = "http://localHost:4200/user/reset-password/" + HashidsHelper.EncodeEmail(model.email);
-            await EmailHelper.SendEmailAsync(model.email, "Reset password", new EmailTemplateViewModel() { ResetPasswordUrl = link, Name = isUserExist.FirstName + " " + isUserExist.FirstName }, _configuration);
+            string link = "http://localHost:4200/user/reset-password/" + HashidsHelper.EncodeEmail(model.Email);
+            await EmailHelper.SendEmailAsync(model.Email, "Reset password", new EmailTemplateViewModel() { ResetPasswordUrl = link, Name = isUserExist.FirstName + " " + isUserExist.FirstName }, _configuration);
             return Ok();
         }
 
@@ -191,5 +186,5 @@ namespace UserService.API.Controllers
 }
 public class EmailRequestModel
 {
-    public string email { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
 }
