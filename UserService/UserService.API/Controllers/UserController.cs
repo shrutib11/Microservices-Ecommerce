@@ -5,9 +5,11 @@ using AutoMapper;
 using Google.Protobuf.WellKnownTypes;
 using Microservices.Shared;
 using Microservices.Shared.Helpers;
+using Microservices.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using UserService.Application.DTOs;
@@ -25,12 +27,13 @@ namespace UserService.API.Controllers
         private readonly IMapper _mapper;
 
         private readonly IDistributedCache _cache;
-
         private readonly IJwtService _jwtService;
-        public UserController(IUserService userService, IMapper mapper, IJwtService jwtService, IDistributedCache cache)
+        private IConfiguration _configuration;
+        public UserController(IUserService userService, IConfiguration configuration, IMapper mapper, IJwtService jwtService, IDistributedCache cache)
         {
             _userService = userService;
             _mapper = mapper;
+            _configuration = configuration;
             _jwtService = jwtService;
             _cache = cache;
         }
@@ -63,6 +66,34 @@ namespace UserService.API.Controllers
         public async Task<IActionResult> GetAll()
         {
             return Ok(ApiResponseHelper.Success(await _userService.GetAllUsers(), HttpStatusCode.OK));
+        }
+
+
+        [HttpPost("sendEmail")]
+        public async Task<IActionResult> SendEmail([FromBody] EmailRequestModel model)
+        {
+            UserDto? isUserExist = await _userService.GetUserByEmail(model.email);
+            if (isUserExist == null)
+            {
+                return NotFound(ApiResponseHelper.Error("User not Exist !! Register First !! ", HttpStatusCode.NotFound));
+            }
+            string link = "http://localHost:4200/user/reset-password/" + HashidsHelper.EncodeEmail(model.email);
+            await EmailHelper.SendEmailAsync(model.email, "Reset password", new EmailTemplateViewModel() { ResetPasswordUrl = link, Name = isUserExist.FirstName + " " + isUserExist.FirstName }, _configuration);
+            return Ok();
+        }
+
+        [HttpPut("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] JObject userData)
+        {
+            string? email = userData["email"]?.ToString();
+            string? newPassword = userData["newPassword"]?.ToString();
+            UserDto? currentUser = await _userService.GetUserByEmail(email!.DecodeEmail()!);
+            if (currentUser != null)
+            {
+                currentUser.Password = PasswordHelper.HashPassword(newPassword!);
+            }
+            await _userService.UpdateUser(currentUser!);
+            return Ok(ApiResponseHelper.Success(currentUser, HttpStatusCode.OK));
         }
 
         [AllowAnonymous]
@@ -124,7 +155,6 @@ namespace UserService.API.Controllers
             {
                 return BadRequest(ApiResponseHelper.Error("Patch document cannot be null", HttpStatusCode.BadRequest));
             }
-
             UserDto? userDto = await _userService.GetUserById(id);
             User user = _mapper.Map<User>(userDto);
 
@@ -153,9 +183,13 @@ namespace UserService.API.Controllers
                 return Unauthorized(ApiResponseHelper.Error("User not authenticated.", HttpStatusCode.Unauthorized));
             }
 
-           // await _cache.RemoveAsync($"user:{useremail}:jti");
+            // await _cache.RemoveAsync($"user:{useremail}:jti");
 
             return Ok("Logged out successfully.");
         }
     }
+}
+public class EmailRequestModel
+{
+    public string email { get; set; } = string.Empty;
 }
