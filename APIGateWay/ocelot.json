@@ -177,6 +177,22 @@
             }
         },
         {
+            "DownstreamPathTemplate": "/api/User/sendEmail",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4000}
+            ],
+            "UpstreamPathTemplate": "/user/reset-password",
+            "UpstreamHttpMethod": ["POST"]
+        },
+        {
+            "DownstreamPathTemplate": "/api/User/ResetPassword",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4000}
+            ],
+            "UpstreamPathTemplate": "/user/reset-password",
+            "UpstreamHttpMethod": ["PUT"]
+        },
+        {
             "DownstreamPathTemplate": "/uploads/{file}",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4000}

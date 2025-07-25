@@ -18,6 +18,18 @@ public static class HashidsHelper
         return decoded.Length > 0 ? decoded[0] : null;
     }
 
+    public static string EncodeEmail(this string email)
+    {
+        var bytes = System.Text.Encoding.UTF8.GetBytes(email);
+        return Convert.ToBase64String(bytes);
+    }
+
+    public static string DecodeEmail(this string encodedEmail)
+    {
+        var bytes = Convert.FromBase64String(encodedEmail);
+        return System.Text.Encoding.UTF8.GetString(bytes);
+    }
+
     public static string EncodeFromInt(this int id, IServiceProvider services)
     {
         var hashids = GetHashids(services);

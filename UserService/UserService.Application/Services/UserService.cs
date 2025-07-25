@@ -80,7 +80,6 @@ namespace UserService.Application.Services
                 currentUser.ProfileImage = ImageHelper.SaveImageWithName(model.UserFile, model.FirstName, rootPath);
             }
             currentUser.UpdatedAt = DateTime.Now;
-
             UserDto userModel = _mapper.Map<UserDto>(await _userRepository.UpdateUserAsync(currentUser));
             return userModel ?? throw new Exception("Failed to update user.");
         }
