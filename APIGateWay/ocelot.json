@@ -190,7 +190,11 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4005}
             ],
             "UpstreamPathTemplate": "/cart/GetAll/{id}",
-            "UpstreamHttpMethod": ["GET"]
+            "UpstreamHttpMethod": ["GET"],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
         },
         {
             "DownstreamPathTemplate": "/api/cart/AddCart",
@@ -198,7 +202,11 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4005}
             ],
             "UpstreamPathTemplate": "/cart/createcart",
-            "UpstreamHttpMethod": ["Post"]
+            "UpstreamHttpMethod": ["Post"],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
         },
         {
             "DownstreamPathTemplate": "/api/cart/by-user/{id}",
@@ -206,7 +214,11 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4005}
             ],
             "UpstreamPathTemplate": "/cart/GetUserCart/{id}",
-            "UpstreamHttpMethod": ["GET"]
+            "UpstreamHttpMethod": ["GET"],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
         },
         {
             "DownstreamPathTemplate": "/api/cart/AddToCart",
@@ -214,7 +226,11 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4005}
             ],
             "UpstreamPathTemplate": "/cart/addToCart",
-            "UpstreamHttpMethod": ["POST"]
+            "UpstreamHttpMethod": ["POST"],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
         },
         {
             "DownstreamPathTemplate": "/api/cart/{id}/delete-item",
@@ -222,7 +238,11 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4005}
             ],
             "UpstreamPathTemplate": "/cart/{id}/delete-item",
-            "UpstreamHttpMethod": ["PATCH"]
+            "UpstreamHttpMethod": ["PATCH"],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
         },
         {
             "DownstreamPathTemplate": "/api/cart/update-quantity",
@@ -230,7 +250,11 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4005}
             ],
             "UpstreamPathTemplate": "/cart/update-quantity",
-            "UpstreamHttpMethod": ["PATCH"]
+            "UpstreamHttpMethod": ["PATCH"],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
         }
     ],
     "GlobalConfiguration": {
