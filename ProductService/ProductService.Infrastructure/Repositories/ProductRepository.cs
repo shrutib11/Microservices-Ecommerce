@@ -43,4 +43,10 @@ public class ProductRepository : IProductRepository
             .ToListAsync();
     }
 
+    public async Task<List<Product>> GetProductBySearch(string searchTerm)
+    {
+        return await _context.Products
+            .Where(p => p.Name.ToLower().Contains(searchTerm.ToLower()) && !p.IsDeleted)
+            .ToListAsync();
+    }
 }

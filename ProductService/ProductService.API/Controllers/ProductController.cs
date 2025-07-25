@@ -33,7 +33,7 @@ public class ProductController : ControllerBase
         return Ok(ApiResponseHelper.Success(products, HttpStatusCode.OK));
     }
 
-    
+
     [HttpGet("{id}")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -71,7 +71,7 @@ public class ProductController : ControllerBase
                 );
             return BadRequest(ApiResponseHelper.Error("Validation Failed", HttpStatusCode.BadRequest, errors));
         }
-        
+
         var response = await _categoryClient.GetCategoryByIdAsync(new GetCategoryByIdRequest
         {
             CategoryId = productDto.CategoryId
@@ -160,6 +160,24 @@ public class ProductController : ControllerBase
             return BadRequest(ApiResponseHelper.Error("Category does not exist.", HttpStatusCode.BadRequest));
         }
         var products = await _productService.GetProductsByCategoryIdAsync(id.Value);
+        return Ok(ApiResponseHelper.Success(products, HttpStatusCode.OK));
+    }
+    
+    [HttpGet("Search/{searchTerm}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<APIResponse>> GetProductBySearch(string searchTerm)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            return BadRequest(ApiResponseHelper.Error("Search term cannot be empty.", HttpStatusCode.BadRequest));
+        }
+        var products = await _productService.GetProductBySearchAsync(searchTerm);
+        if (products == null || products.Count == 0)
+        {
+            return NotFound(ApiResponseHelper.Error("No products found matching the search term.", HttpStatusCode.NotFound));
+        }
         return Ok(ApiResponseHelper.Success(products, HttpStatusCode.OK));
     }
 }
