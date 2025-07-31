@@ -3,7 +3,6 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using HashidsNet;
 using Microservices.Shared;
-using Microservices.Shared.Middlewares;
 using Microservices.Shared.Protos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -51,7 +50,6 @@ builder.Services.AddHttpsRedirection(options =>
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 
-// builder.Services.AddMemoryCache();
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
@@ -108,7 +106,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseAuthentication();
-// app.UseMiddleware<JtiValidatorMiddleware>();
 app.UseAuthorization();
 app.UseHttpsRedirection();
 app.MapControllers();

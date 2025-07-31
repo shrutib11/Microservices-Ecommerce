@@ -22,13 +22,16 @@ namespace ProductService.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ProductService.Domain.Product", b =>
+            modelBuilder.Entity("ProductService.Domain.Models.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("AvgRating")
+                        .HasColumnType("decimal(3,2)");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer");
@@ -63,6 +66,9 @@ namespace ProductService.Infrastructure.Migrations
                     b.Property<int>("StockQuantity")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("TotalReviews")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
 
@@ -75,7 +81,7 @@ namespace ProductService.Infrastructure.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2025, 7, 8, 11, 34, 5, 552, DateTimeKind.Local).AddTicks(8981),
+                            CreatedAt = new DateTime(2025, 7, 30, 10, 24, 46, 537, DateTimeKind.Local).AddTicks(2098),
                             Description = "This is a sample product.",
                             IsDeleted = false,
                             Name = "Sample Product 1",
@@ -87,7 +93,7 @@ namespace ProductService.Infrastructure.Migrations
                         {
                             Id = 2,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2025, 7, 8, 11, 34, 5, 552, DateTimeKind.Local).AddTicks(8992),
+                            CreatedAt = new DateTime(2025, 7, 30, 10, 24, 46, 537, DateTimeKind.Local).AddTicks(2102),
                             Description = "Another sample product.",
                             IsDeleted = false,
                             Name = "Sample Product 2",

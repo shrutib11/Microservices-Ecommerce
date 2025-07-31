@@ -12,4 +12,6 @@ public class ProductDto
     public int CategoryId { get; set; }
     public IFormFile? ProductImageFile { get; set; }
     public string? ProductImage { get; set; }
+    public decimal? AvgRating { get; set; }
+    public int? TotalReviews { get; set; }
 }

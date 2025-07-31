@@ -21,9 +21,8 @@ public class ProductController : ControllerBase
         _categoryClient = categoryClient;
     }
 
-    
-    [HttpGet("GetAll")]
     [AllowAnonymous]
+    [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -34,8 +33,8 @@ public class ProductController : ControllerBase
     }
 
 
+
     [HttpGet("{id}")]
-    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -162,7 +161,7 @@ public class ProductController : ControllerBase
         var products = await _productService.GetProductsByCategoryIdAsync(id.Value);
         return Ok(ApiResponseHelper.Success(products, HttpStatusCode.OK));
     }
-    
+
     [HttpGet("Search/{searchTerm}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -8,9 +8,12 @@ public class ProductProfile : Profile
 {
     public ProductProfile()
     {
-        CreateMap<ProductDto, Product>().ReverseMap();
+        CreateMap<ProductDto, Product>()
+        .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+        CreateMap<Product, ProductDto>();
     }
-    
+
 }
-    
+
 

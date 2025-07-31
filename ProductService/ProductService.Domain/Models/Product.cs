@@ -32,6 +32,9 @@ public class Product
     public bool IsDeleted { get; set; } = false;
 
     public DateTime CreatedAt { get; set; } = DateTime.Now;
-    
+
     public DateTime? UpdatedAt { get; set; }
+
+    public decimal? AvgRating { get; set; }
+    public int? TotalReviews { get; set; }
 }

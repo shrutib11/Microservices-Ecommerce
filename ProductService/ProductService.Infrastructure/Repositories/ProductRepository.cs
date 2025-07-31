@@ -49,4 +49,5 @@ public class ProductRepository : IProductRepository
             .Where(p => p.Name.ToLower().Contains(searchTerm.ToLower()) && !p.IsDeleted)
             .ToListAsync();
     }
+
 }

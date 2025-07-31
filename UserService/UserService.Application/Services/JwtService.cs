@@ -1,7 +1,10 @@
+using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.Extensions.Caching.Distributed;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using UserService.Application.Interfaces;
@@ -13,15 +16,12 @@ namespace UserService.Application.Services
         private readonly string _key;
         private readonly string _issuer;
         private readonly string _audience;
-        private readonly IDistributedCache _cache;
-        public JwtService(IConfiguration configuration, IDistributedCache cache)
+        public JwtService(IConfiguration configuration)
         {
             _key = configuration["Jwt:Key"] ?? "";
             _issuer = configuration["Jwt:Issuer"] ?? "";
             _audience = configuration["Jwt:Audience"] ?? "";
-            _cache = cache;
         }
-
         public string generateJwtToken(string email, string role, int userId)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -31,14 +31,14 @@ namespace UserService.Application.Services
             var now = DateTime.UtcNow;
             var expires = now.AddMinutes(15);
 
-            var jti = Guid.NewGuid().ToString();
-
             var claims = new[]
             {
-                new Claim(ClaimTypes.Email, email),
-                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-                new Claim(ClaimTypes.Role, role),
-                new Claim(JwtRegisteredClaimNames.Jti, jti)
+                new Claim("email", email),
+                new Claim("nameid", userId.ToString()),
+                new Claim("role", role),
+                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                // DO NOT manually add Iat, Nbf, or Exp
             };
 
             var token = new JwtSecurityToken(
@@ -52,27 +52,15 @@ namespace UserService.Application.Services
 
             var tokenString = tokenHandler.WriteToken(token);
 
-            // await _cache.SetStringAsync($"user:{email}:jti",
-            //      jti, new DistributedCacheEntryOptions
-            //      {
-            //          AbsoluteExpiration = new DateTimeOffset(expires)
-            //      });
-
-
-
             return tokenString;
         }
-
-
 
         public ClaimsPrincipal? ValidateTokens(string token)
         {
             if (string.IsNullOrEmpty(token))
                 return null;
-
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_key);
-
             try
             {
                 var validationParameters = new TokenValidationParameters
