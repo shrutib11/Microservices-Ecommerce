@@ -29,6 +29,8 @@ public class ProductDbContext : DbContext
             entity.Property(p => p.IsDeleted)
                 .HasDefaultValue(false);
 
+            entity.Property(e => e.AvgRating).HasColumnType("decimal(3,2)");
+
         });
 
         modelBuilder.Entity<Product>().HasData(
@@ -58,7 +60,7 @@ public class ProductDbContext : DbContext
                CreatedAt = DateTime.Now,
                UpdatedAt = null
            }
-       
+
        );
     }
 }

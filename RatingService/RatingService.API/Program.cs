@@ -1,41 +1,35 @@
 using System.Text;
-using CartService.Application.Interfaces;
-using CartService.Application.Mappings;
-using CartService.Application.Validators;
-using CartService.Domain.Interfaces;
-using CartService.Infrastructure;
-using CartService.Infrastructure.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using HashidsNet;
 using Microservices.Shared;
-using Microservices.Shared.Protos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using RatingService.Application.Interfaces;
+using RatingService.Application.Mappings;
+using RatingService.Application.Validators;
+using RatingService.Domain.Interfcaes;
+using RatingService.Infrastructure;
+using RatingService.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
+var conn = builder.Configuration.GetConnectionString("RatingServiceConnection");
+builder.Services.AddDbContext<RatingServiceDbContext>(options =>options.UseNpgsql(conn!));
 
 builder.Services.AddControllers();
-var conn = builder.Configuration.GetConnectionString("CheckoutDb");
-builder.Services.AddDbContext<CartServiceDbContext>(options =>
-    options.UseNpgsql(conn!));
-
-builder.Services.AddSingleton<IHashids>(_ => new Hashids("mysecretsalt12345", 8));
-
-builder.Services.AddAutoMapper(typeof(CartProfile));
-builder.Services.AddScoped<ICartRepository, CartRepository>();
-builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
-builder.Services.AddScoped<ICartService, CartService.Application.Services.CartService>();
 builder.Services.AddFluentValidationAutoValidation(options =>
 {
     options.DisableDataAnnotationsValidation = true;
 });
-builder.Services.AddValidatorsFromAssemblyContaining<CartDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<RatingDtoValidator>();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IRatingService, RatingService.Application.Services.RatingService>();
+builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+builder.Services.AddAutoMapper(typeof(RatingProfile));
 
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
 
@@ -88,24 +82,14 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddAuthorization();
 
-
-builder.Services.AddGrpcClient<User.UserClient>(o =>
-{
-    o.Address = new Uri("https://localhost:5006"); 
-});
-
-builder.Services.AddGrpcClient<Product.ProductClient>(o =>
-{
-    o.Address = new Uri("https://localhost:5004");
-});
-
 builder.Services.AddHttpsRedirection(options =>
 {
-    options.HttpsPort = 4005;
+    options.HttpsPort = 4007;
 });
 
 var app = builder.Build();
 
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

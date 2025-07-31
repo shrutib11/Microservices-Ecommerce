@@ -37,6 +37,7 @@ public class ProductService : IProductService
     public async Task<ProductDto> AddProductAsync(ProductDto productDto)
     {
         var product = _mapper.Map<Product>(productDto);
+        
         if (productDto.ProductImageFile == null)
         {
             throw new ArgumentNullException("Product Image cannot be null");
@@ -52,14 +53,9 @@ public class ProductService : IProductService
         var product = await _productRepository.GetByIdAsync(Convert.ToInt32(productDto.Id));
         if (product == null) return null;
 
-        var existingImage = product.ProductImage;
         _mapper.Map(productDto, product);
 
-        if (productDto.ProductImageFile == null)
-        {
-            product.ProductImage = existingImage;
-        }
-        else
+        if (productDto.ProductImageFile != null)
         {
             var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
             product.ProductImage = ImageHelper.SaveImageWithName(productDto.ProductImageFile, productDto.Name, rootPath);
