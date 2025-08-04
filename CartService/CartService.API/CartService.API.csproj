@@ -23,5 +23,6 @@
     <ProjectReference Include="..\CartService.Application\CartService.Application.csproj" />
     <Protobuf Include="..\..\Microservices.Shared\Protos\user.proto" GrpcServices="Client" />
     <Protobuf Include="..\..\Microservices.Shared\Protos\product.proto" GrpcServices="Client" />
+
   </ItemGroup>
 </Project>

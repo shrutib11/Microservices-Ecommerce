@@ -82,6 +82,17 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddGrpcClient<Microservices.Shared.Protos.Product.ProductClient>(o =>
+{
+    o.Address = new Uri("https://localhost:5004");
+});
+
+builder.Services.AddGrpcClient<Microservices.Shared.Protos.User.UserClient>(o =>
+{
+    o.Address = new Uri("https://localhost:5006"); 
+});
+
+
 builder.Services.AddHttpsRedirection(options =>
 {
     options.HttpsPort = 4007;

@@ -8,6 +8,7 @@ service Product {
   rpc GetProductsByCategoryId (GetProductsByCategoryIdRequest) returns (GetProductsByCategoryIdResponse);
   rpc DeleteProduct (ProductRequest) returns (DeleteProductResponse);
   rpc GetProductById (ProductRequest) returns (GetProductResponse);
+  rpc UpdateRatingInfo(UpdateProductRatingsRequest) returns (UpdateProductRatingsResponse);
 }
 
 message GetProductsByCategoryIdRequest {
@@ -18,6 +19,7 @@ message ProductItem {
   int32 productId = 1;
   string name = 2;
   string image = 3;
+  bool isFound = 4; 
 }
 
 message GetProductsByCategoryIdResponse {
@@ -33,5 +35,15 @@ message ProductRequest {
 }
 
 message DeleteProductResponse {
+  bool success = 1;
+}
+
+message UpdateProductRatingsRequest {
+  int32 productId = 1;
+  double avgRating = 2;
+  int32 totalRatings = 3;
+}
+
+message UpdateProductRatingsResponse {
   bool success = 1;
 }

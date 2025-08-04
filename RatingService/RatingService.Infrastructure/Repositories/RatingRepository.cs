@@ -31,4 +31,9 @@ public class RatingRepository : IRatingRepository
         return await _context.Ratings
             .Where(p => p.ProductId == productId).AverageAsync(p => p.RatingValue);
     }
+
+    public async Task<List<Rating>> GetRatingByProductAsync(int productId)
+    {
+        return await _context.Ratings.Where(p => p.ProductId == productId).ToListAsync();
+    }
 }

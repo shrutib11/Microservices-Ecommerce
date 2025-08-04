@@ -291,6 +291,31 @@
                 "AuthenticationProviderKey": "Bearer",
                 "AllowedScopes": []
             }
+        },
+        {
+            "DownstreamPathTemplate": "/api/Ratings/GetByProduct/{productId}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4007}
+            ],
+            "UpstreamPathTemplate": "/rating/getbyproduct/{productId}",
+            "UpstreamHttpMethod": ["GET"],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
+        },
+        {
+            "DownstreamPathTemplate": "/api/Ratings/GetCustomerRatings/{productId}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4007}
+            ],
+            "UpstreamPathTemplate": "/rating/getcustomerratings/{productId}",
+            "UpstreamHttpMethod": ["GET"],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
+            
         }
     ],
     "GlobalConfiguration": {

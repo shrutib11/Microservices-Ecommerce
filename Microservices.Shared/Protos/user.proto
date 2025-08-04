@@ -6,6 +6,7 @@ package user;
 
 service User {
   rpc GetUserById (GetUserByIdRequest) returns (GetUserByIdResponse);
+  rpc GetUsersByIds (GetUsersByIdsRequest) returns (GetUsersByIdsResponse); 
 }
 
 message GetUserByIdRequest{
@@ -15,4 +16,14 @@ message GetUserByIdRequest{
 message GetUserByIdResponse{
     int32 userId = 1;
     bool isFound = 2;
+    string userName = 3;
+    string userImage = 4;
+}
+
+message GetUsersByIdsRequest {
+  repeated int32 userIds = 1; 
+}
+
+message GetUsersByIdsResponse {
+  repeated GetUserByIdResponse users = 1; 
 }
