@@ -84,5 +84,11 @@ namespace UserService.Application.Services
             return userModel ?? throw new Exception("Failed to update user.");
         }
 
+        public async Task<List<UserDto>> GetUsersByIds(List<int> userIds)
+        {
+            List<User> users = await _userRepository.GetByIdsAsync(userIds);
+            return _mapper.Map<List<UserDto>>(users);
+        }
+
     }
 }

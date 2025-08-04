@@ -2,6 +2,7 @@ using ProductService.Application.Interfaces;
 using Grpc.Core;
 using Microservices.Shared.Protos;
 
+
 namespace ProductService.API.GrpcServices;
 
 public class ProductGrpcService : Product.ProductBase
@@ -36,17 +37,28 @@ public class ProductGrpcService : Product.ProductBase
     public override async Task<GetProductResponse> GetProductById(ProductRequest request, ServerCallContext context)
     {
         var product = await _productService.GetProductByIdAsync(request.ProductId);
-        if (product == null)
-            throw new RpcException(new Status(StatusCode.NotFound, "Product not found"));
 
-        return new GetProductResponse
+        var response = new GetProductResponse
         {
-            Product = new ProductItem
-            {
-                ProductId = (int)product.Id!,
-                Name = product.Name,
-                Image = product.ProductImage
-            }
+            Product = product == null
+           ? new ProductItem { IsFound = false }
+           : new ProductItem
+           {
+               ProductId = (int)product.Id!,
+               Name = product.Name,
+               Image = product.ProductImage,
+               IsFound = true
+           }
         };
+
+        return response;
+    }
+
+    public override async Task<UpdateProductRatingsResponse> UpdateRatingInfo(UpdateProductRatingsRequest request, ServerCallContext context)
+    {
+        var product = await _productService.UpdateRatings(request.ProductId, (decimal)request.AvgRating, request.TotalRatings);
+        if (product == null) return new UpdateProductRatingsResponse { Success = false };
+
+        return new UpdateProductRatingsResponse { Success = true };
     }
 }

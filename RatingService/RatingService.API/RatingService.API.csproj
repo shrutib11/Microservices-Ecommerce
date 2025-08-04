@@ -23,5 +23,7 @@
     <ProjectReference Include="..\RatingService.Application\RatingService.Application.csproj" />
     <ProjectReference Include="..\..\Microservices.Shared\Microservices.Shared.csproj" />
     <ProjectReference Include="..\RatingService.Infrastructure\RatingService.Infrastructure.csproj" />
+     <Protobuf Include="..\..\Microservices.Shared\Protos\product.proto" GrpcServices="Client" />
+      <Protobuf Include="..\..\Microservices.Shared\Protos\user.proto" GrpcServices="Client" />
   </ItemGroup>
 </Project>

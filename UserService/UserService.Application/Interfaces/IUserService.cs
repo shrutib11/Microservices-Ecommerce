@@ -15,5 +15,6 @@ namespace UserService.Application.Interfaces
         bool IsUserExist(string email);
         public Task<UserDto?> UpdateUser(UserDto model);
         public Task<UserDto?> GetUserByEmail(string email);
+        public Task<List<UserDto>> GetUsersByIds(List<int> userIds);
     }
 }

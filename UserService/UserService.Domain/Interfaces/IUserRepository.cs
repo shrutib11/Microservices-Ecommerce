@@ -13,5 +13,6 @@ namespace UserService.Domain.Interfaces
         public Task<User> GetUserByEmailAysnc(string email);
         public Task<User?> GetUserByIdSysnc(int id);
         public Task<User> UpdateUserAsync(User user);
+        public Task<List<User>> GetByIdsAsync(List<int> userIds);
     }
 }

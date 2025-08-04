@@ -26,6 +26,12 @@
         "problemMatcher": []
       },
       {
+        "label": "Run RatingService",
+        "type": "shell",
+        "command": "dotnet run --project ./RatingService/RatingService.API",
+        "problemMatcher": []
+      },
+      {
         "label": "Run APIGateWay",
         "type": "shell",
         "command": "dotnet run --project ./APIGateWay",

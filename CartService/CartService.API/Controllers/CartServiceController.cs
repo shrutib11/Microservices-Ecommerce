@@ -137,6 +137,11 @@ public class CartServiceController : ControllerBase
             {
                 ProductId = item.ProductId
             });
+            
+            if (!productResponse.Product.IsFound)
+            {
+                return NotFound(ApiResponseHelper.Error("Product Not Found", HttpStatusCode.NotFound));
+            }
 
             var productDto = new ProductDto
             {

@@ -31,7 +31,7 @@ namespace UserService.Infrastructure.Repositories
 
         public async Task<User> GetUserByEmailAysnc(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(user => user.Email == email)  ?? new User();
+            return await _context.Users.FirstOrDefaultAsync(user => user.Email == email) ?? new User();
         }
 
         public async Task<User?> GetUserByIdSysnc(int id)
@@ -46,6 +46,11 @@ namespace UserService.Infrastructure.Repositories
             if (result > 0)
                 return user;
             throw new Exception("User update failed.");
+        }
+        
+        public async Task<List<User>> GetByIdsAsync(List<int> userIds)
+        {
+            return await _context.Users.Where(u => userIds.Contains(u.Id)).ToListAsync() ?? throw new Exception("An error occurred while retrieving users by IDs.");
         }
     }
 }

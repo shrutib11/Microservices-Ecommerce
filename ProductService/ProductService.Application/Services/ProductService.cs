@@ -37,7 +37,7 @@ public class ProductService : IProductService
     public async Task<ProductDto> AddProductAsync(ProductDto productDto)
     {
         var product = _mapper.Map<Product>(productDto);
-        
+
         if (productDto.ProductImageFile == null)
         {
             throw new ArgumentNullException("Product Image cannot be null");
@@ -86,5 +86,17 @@ public class ProductService : IProductService
     {
         var products = await _productRepository.GetProductBySearch(searchTerm);
         return _mapper.Map<List<ProductDto>>(products);
+    }
+
+    public async Task<ProductDto?> UpdateRatings(int productId, decimal avgRating, int totalRatings)
+    {
+        var product = await _productRepository.GetByIdAsync(productId);
+        if (product == null) return null;
+
+        product.AvgRating = avgRating;
+        product.TotalReviews = totalRatings;
+
+        var updatedProduct = await _productRepository.UpdateAsync(product);
+        return _mapper.Map<ProductDto>(updatedProduct);
     }
 }
