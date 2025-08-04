@@ -38,8 +38,14 @@
         "problemMatcher": []
       },
       {
+        "label": "Run RatingService",
+        "type": "shell",
+        "command": "dotnet run --project ./RatingService/RatingService.API",
+        "problemMatcher": []
+      },
+      {
         "label": "Run All Services",
-        "dependsOn": ["Run CategoryService", "Run ProductService", "Run UserService", "Run APIGateWay", "Run CartService"],
+        "dependsOn": ["Run CategoryService", "Run ProductService", "Run UserService", "Run APIGateWay", "Run CartService", "Run RatingService"],
         "dependsOrder": "parallel"
       }
     ]

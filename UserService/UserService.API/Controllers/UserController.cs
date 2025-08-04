@@ -169,7 +169,7 @@ namespace UserService.API.Controllers
 
         [HttpPost("logout")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Logout()
+        public IActionResult Logout()
         {
             var useremail = User.FindFirst(ClaimTypes.Email)?.Value;
 
@@ -177,8 +177,6 @@ namespace UserService.API.Controllers
             {
                 return Unauthorized(ApiResponseHelper.Error("User not authenticated.", HttpStatusCode.Unauthorized));
             }
-
-            // await _cache.RemoveAsync($"user:{useremail}:jti");
 
             return Ok("Logged out successfully.");
         }
