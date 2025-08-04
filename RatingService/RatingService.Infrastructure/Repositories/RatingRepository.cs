@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.EntityFrameworkCore;
 using RatingService.Domain.Interfcaes;
 using RatingService.Domain.Models;

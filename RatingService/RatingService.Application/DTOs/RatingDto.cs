@@ -12,6 +12,5 @@ public class RatingDto
     public Dictionary<int, int>? RatingDistribution { get; set; } 
     public string? ReviewerName { get; set; }             
     public DateTime? ReviewDate { get; set; }            
-    public string? UserProfile { get; set; }    
-    
+    public string? UserProfile { get; set; }
 }
