@@ -4,15 +4,13 @@ using ProductService.Domain.Models;
 
 namespace ProductService.Application.Mappings;
 
-public class ProductProfile : Profile
+public class ProductMediaProfile : Profile
 {
-    public ProductProfile()
+    public ProductMediaProfile()
     {
-        CreateMap<ProductDto, Product>()
+        CreateMap<ProductMediasDto, ProductMedia>()
         .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
-        CreateMap<Product, ProductDto>();
+        CreateMap<ProductMedia, ProductMediasDto>();
     }
 }
-
-

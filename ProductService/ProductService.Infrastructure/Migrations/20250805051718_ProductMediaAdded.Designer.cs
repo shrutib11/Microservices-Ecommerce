@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ProductService.Infrastructure;
@@ -11,9 +12,11 @@ using ProductService.Infrastructure;
 namespace ProductService.Infrastructure.Migrations
 {
     [DbContext(typeof(ProductDbContext))]
-    partial class ProductDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250805051718_ProductMediaAdded")]
+    partial class ProductMediaAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,30 +73,6 @@ namespace ProductService.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2025, 8, 5, 10, 47, 18, 449, DateTimeKind.Local).AddTicks(3881),
-                            Description = "This is a sample product.",
-                            IsDeleted = false,
-                            Name = "Sample Product 1",
-                            Price = 99.99m,
-                            StockQuantity = 10
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(2025, 8, 5, 10, 47, 18, 449, DateTimeKind.Local).AddTicks(3884),
-                            Description = "Another sample product.",
-                            IsDeleted = false,
-                            Name = "Sample Product 2",
-                            Price = 49.99m,
-                            StockQuantity = 5
-                        });
                 });
 
             modelBuilder.Entity("ProductService.Domain.Models.ProductMedia", b =>
