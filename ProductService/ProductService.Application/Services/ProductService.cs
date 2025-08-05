@@ -37,16 +37,36 @@ public class ProductService : IProductService
     public async Task<ProductDto> AddProductAsync(ProductDto productDto)
     {
         var product = _mapper.Map<Product>(productDto);
+        var productMediaList = new List<ProductMedia>();
 
-        if (productDto.ProductImageFile == null)
+        if (productDto.ProductMedias != null && productDto.ProductMedias.Any())
         {
-            throw new ArgumentNullException("Product Image cannot be null");
+            var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+
+            foreach (var mediaDto in productDto.ProductMedias)
+            {
+                if (mediaDto.MediaFile == null)
+                    throw new ArgumentException("Media file cannot be null.");
+
+                string filename = ImageHelper.SaveImageWithName(mediaDto.MediaFile, productDto.Name, rootPath);
+
+                productMediaList.Add(new ProductMedia
+                {
+                    MediaType = mediaDto.MediaType,
+                    MediaUrl = filename,
+                    DisplayOrder = mediaDto.DisplayOrder
+                });
+            }
         }
-        var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-        product.ProductImage = ImageHelper.SaveImageWithName(productDto.ProductImageFile, productDto.Name, rootPath);
-        var addedProduct = await _productRepository.AddAsync(product);
-        return _mapper.Map<ProductDto>(addedProduct);
+
+        var savedProduct = await _productRepository.AddProductWithMediaAsync(product, productMediaList);
+
+        var resultDto = _mapper.Map<ProductDto>(savedProduct.Product);
+        resultDto.ProductMedias = _mapper.Map<List<ProductMediasDto>>(savedProduct.MediaList);
+
+        return resultDto;
     }
+
 
     public async Task<ProductDto?> UpdateProductAsync(ProductDto productDto)
     {
@@ -55,11 +75,11 @@ public class ProductService : IProductService
 
         _mapper.Map(productDto, product);
 
-        if (productDto.ProductImageFile != null)
-        {
-            var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-            product.ProductImage = ImageHelper.SaveImageWithName(productDto.ProductImageFile, productDto.Name, rootPath);
-        }
+        // if (productDto.ProductImageFile != null)
+        // {
+        //     var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+        //     // product.ProductImage = ImageHelper.SaveImageWithName(productDto.ProductImageFile, productDto.Name, rootPath);
+        // }
 
         product.UpdatedAt = DateTime.Now;
         var updatedProduct = await _productRepository.UpdateAsync(product);

@@ -46,7 +46,7 @@ public class ProductGrpcService : Product.ProductBase
            {
                ProductId = (int)product.Id!,
                Name = product.Name,
-               Image = product.ProductImage,
+               Image = product.ProductMedias.Where(p => p.DisplayOrder == 1 && !p.IsDeleted).Select(p => p.MediaUrl).FirstOrDefault(),
                IsFound = true
            }
         };

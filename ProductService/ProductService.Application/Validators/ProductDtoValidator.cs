@@ -28,12 +28,28 @@ public class ProductDtoValidator : AbstractValidator<ProductDto>
             .NotNull().WithMessage("CategoryId is required.")
             .GreaterThan(0).WithMessage("Valid CategoryId is required.");
 
-        RuleFor(x => x.ProductImageFile)
-            .Cascade(CascadeMode.Stop)
-            .Must(BeAValidImage).WithMessage("Only JPG, JPEG, PNG, and WEBP image files are allowed.")
-            .Must(f => f.Length <= 2 * 1024 * 1024).WithMessage("Image size must be less than or equal to 2MB.")
-            .When(x => x.ProductImageFile != null);
+        RuleFor(x => x.ProductMedias)
+            .Must(mediaList => mediaList == null || mediaList.Count <= 6)
+            .WithMessage("You can upload a maximum of 6 media files.");
 
+        // RuleFor(x => x.ProductMedias.Where(m => !m.IsDeleted).Select(m => m.DisplayOrder).ToList())
+        //     .Must(BeContinuousDisplayOrder)
+        //     .WithMessage("DisplayOrder must be continuous starting from 1 (e.g. 1,2,3...).");
+
+    }
+
+    private bool BeContinuousDisplayOrder(List<int> displayOrders)
+    {
+        if (!displayOrders.Any()) return true;
+
+        var ordered = displayOrders.OrderBy(x => x).ToList();
+        for (int i = 0; i < ordered.Count; i++)
+        {
+            if (ordered[i] != i + 1)
+                return false;
+        }
+
+        return true;
     }
 
     private bool BeAValidImage(IFormFile? file)

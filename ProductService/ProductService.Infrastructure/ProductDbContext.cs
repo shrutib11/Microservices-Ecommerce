@@ -10,6 +10,8 @@ public class ProductDbContext : DbContext
 
     public DbSet<Product> Products { get; set; }
 
+    public DbSet<ProductMedia> ProductMedias { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -33,6 +35,31 @@ public class ProductDbContext : DbContext
 
         });
 
+        modelBuilder.Entity<ProductMedia>(entity =>
+        {
+            entity.Property(p => p.MediaType)
+            .HasConversion<string>();
+
+            entity.Property(p => p.DisplayOrder)
+            .IsRequired();
+
+            entity.Property(p => p.CreatedAt)
+            .HasColumnType("timestamp without time zone")
+            .HasDefaultValueSql("NOW()");
+
+            entity.Property(p => p.UpdatedAt)
+            .HasColumnType("timestamp without time zone");
+
+            entity.Property(p => p.IsDeleted)
+            .HasDefaultValue(false);
+            
+            entity
+            .HasOne(d => d.Product)
+            .WithMany()
+            .HasForeignKey(d => d.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
+        });
+
         modelBuilder.Entity<Product>().HasData(
            new Product
            {
@@ -42,7 +69,6 @@ public class ProductDbContext : DbContext
                Price = 99.99M,
                StockQuantity = 10,
                CategoryId = 1,
-               ProductImage = "sample1.jpg",
                IsDeleted = false,
                CreatedAt = DateTime.Now,
                UpdatedAt = null
@@ -55,7 +81,6 @@ public class ProductDbContext : DbContext
                Price = 49.99M,
                StockQuantity = 5,
                CategoryId = 2,
-               ProductImage = "sample2.jpg",
                IsDeleted = false,
                CreatedAt = DateTime.Now,
                UpdatedAt = null

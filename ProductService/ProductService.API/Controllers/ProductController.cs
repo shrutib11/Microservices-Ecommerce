@@ -32,8 +32,6 @@ public class ProductController : ControllerBase
         return Ok(ApiResponseHelper.Success(products, HttpStatusCode.OK));
     }
 
-
-
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

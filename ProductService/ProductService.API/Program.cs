@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using HashidsNet;
@@ -23,12 +24,18 @@ builder.Services.AddSingleton<IHashids>(_ => new Hashids("mysecretsalt12345", 8)
 builder.Services.AddDbContext<ProductDbContext>(options =>
     options.UseNpgsql(conn!));
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+.AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 builder.Services.AddFluentValidationAutoValidation(options =>
 {
     options.DisableDataAnnotationsValidation = true;
 });
+
 builder.Services.AddValidatorsFromAssemblyContaining<ProductDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ProductMediaDtoValidator>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService.Application.Services.ProductService>();
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()));
@@ -37,11 +44,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddGrpc();
 builder.Services.AddSwaggerGen();
 
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.MaxRequestBodySize = 8388608; // 80 MB
+});
 
 builder.Services.AddGrpcClient<Category.CategoryClient>(o =>
 {
     o.Address = new Uri("https://localhost:5003");
 });
+
 builder.Services.AddHttpsRedirection(options =>
 {
     options.HttpsPort = 4002; 

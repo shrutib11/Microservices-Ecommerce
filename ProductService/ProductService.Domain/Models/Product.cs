@@ -25,10 +25,6 @@ public class Product
     [Required]
     public int CategoryId { get; set; }
 
-    [Required]
-    [MaxLength(200)]
-    public string ProductImage { get; set; } = null!;
-
     public bool IsDeleted { get; set; } = false;
 
     public DateTime CreatedAt { get; set; } = DateTime.Now;
