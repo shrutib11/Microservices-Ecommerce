@@ -37,6 +37,8 @@ builder.Services.AddFluentValidationAutoValidation(options =>
 builder.Services.AddValidatorsFromAssemblyContaining<ProductDtoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<ProductMediaDtoValidator>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IProductMediaRepository, ProductMediaRepository>();
 builder.Services.AddScoped<IProductService, ProductService.Application.Services.ProductService>();
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()));
 
