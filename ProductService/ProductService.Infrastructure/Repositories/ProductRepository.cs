@@ -12,15 +12,9 @@ public class ProductRepository : IProductRepository
         _context = context;
     }
 
-    public async Task<List<Product>> GetAllProductAsync()
-    {
-        return await _context.Products.Where(p => !p.IsDeleted).ToListAsync();
-    }
+    public async Task<List<Product>> GetAllProductAsync() => await _context.Products.Where(p => !p.IsDeleted).ToListAsync();
 
-    public async Task<Product?> GetByIdAsync(int id)
-    {
-        return await _context.Products.Where(p => p.Id == id && !p.IsDeleted).FirstOrDefaultAsync();
-    }
+    public async Task<Product?> GetByIdAsync(int id) => await _context.Products.Where(p => p.Id == id && !p.IsDeleted).FirstOrDefaultAsync();
 
     public async Task<(Product Product, List<ProductMedia> MediaList)> AddProductWithMediaAsync(Product product, List<ProductMedia> productMediaList)
     {
@@ -41,7 +35,7 @@ public class ProductRepository : IProductRepository
             await _context.SaveChangesAsync();
 
             await transaction.CommitAsync();
-            return (product,productMediaList);
+            return (product, productMediaList);
         }
         catch
         {
@@ -57,18 +51,13 @@ public class ProductRepository : IProductRepository
         return product;
     }
 
-    public async Task<List<Product>> GetProductsByCategoryIdAsync(int categoryId)
-    {
-        return await _context.Products
+    public async Task<List<Product>> GetProductsByCategoryIdAsync(int categoryId) =>
+        await _context.Products
             .Where(p => p.CategoryId == categoryId && !p.IsDeleted)
             .ToListAsync();
-    }
 
-    public async Task<List<Product>> GetProductBySearch(string searchTerm)
-    {
-        return await _context.Products
-            .Where(p => p.Name.ToLower().Contains(searchTerm.ToLower()) && !p.IsDeleted)
-            .ToListAsync();
-    }
-
+    public async Task<List<Product>> GetProductBySearch(string searchTerm) => 
+        await _context.Products
+                .Where(p => p.Name.ToLower().Contains(searchTerm.ToLower()) && !p.IsDeleted)
+                .ToListAsync();
 }
