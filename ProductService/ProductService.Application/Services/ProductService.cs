@@ -29,7 +29,7 @@ public class ProductService : IProductService
 
         foreach (var p in productviewModels)
         {
-            var productMediaViewModel = await _productMediaRepository.GetByProductIdAsync(p.Id);
+            var productMediaViewModel = await _productMediaRepository.GetByProductIdAsync(p.Id ?? 0);
             p.ProductImage = productMediaViewModel.Where(p => p.DisplayOrder == 1).Select(p => p.MediaUrl).FirstOrDefault();
             p.ProductMedias = _mapper.Map<List<ProductMediasDto>>(productMediaViewModel);
         }
@@ -51,6 +51,8 @@ public class ProductService : IProductService
     public async Task<ProductDto> AddProductAsync(ProductDto productDto)
     {
         var product = _mapper.Map<Product>(productDto);
+        product.AvgRating = (decimal?)0.0;
+        product.TotalReviews = 0;
         var productMediaList = new List<ProductMedia>();
 
         if (productDto.ProductMedias != null && productDto.ProductMedias.Any())
@@ -76,6 +78,7 @@ public class ProductService : IProductService
         var savedProduct = await _productRepository.AddProductWithMediaAsync(product, productMediaList);
 
         var resultDto = _mapper.Map<ProductDto>(savedProduct.Product);
+        resultDto.ProductImage = savedProduct.MediaList.Where(p => p.DisplayOrder == 1 && !p.IsDeleted).Select(p => p.MediaUrl).FirstOrDefault();
         resultDto.ProductMedias = _mapper.Map<List<ProductMediasDto>>(savedProduct.MediaList);
 
         return resultDto;
@@ -97,7 +100,6 @@ public class ProductService : IProductService
             //When no change in media
             var shouldProcessMedia = productDto.ProductMedias != null
                     && productDto.ProductMedias.Any(m => m.MediaFile != null || m.Id != 0 || !string.IsNullOrEmpty(m.MediaUrl));
-
 
             if (shouldProcessMedia && productDto.ProductMedias != null)
             {
@@ -190,13 +192,32 @@ public class ProductService : IProductService
     public async Task<List<ProductDto>> GetProductsByCategoryIdAsync(int categoryId)
     {
         var products = await _productRepository.GetProductsByCategoryIdAsync(categoryId);
-        return _mapper.Map<List<ProductDto>>(products);
+         var productViewmodel = _mapper.Map<List<ProductDto>>(products);
+
+        foreach (var product in productViewmodel)
+        {
+            var productMediaViewmodel = await _productMediaRepository.GetByProductIdAsync(product.Id ?? 0);
+            product.ProductImage = productMediaViewmodel.Where(p => p.DisplayOrder == 1 && !p.IsDeleted).Select(p => p.MediaUrl).FirstOrDefault();
+            product.ProductMedias = _mapper.Map<List<ProductMediasDto>>(productMediaViewmodel);
+        }
+
+        return productViewmodel;
+        // return _mapper.Map<List<ProductDto>>(products);
     }
 
     public async Task<List<ProductDto>> GetProductBySearchAsync(string searchTerm)
     {
         var products = await _productRepository.GetProductBySearch(searchTerm);
-        return _mapper.Map<List<ProductDto>>(products);
+        var productViewmodel = _mapper.Map<List<ProductDto>>(products);
+
+        foreach (var product in productViewmodel)
+        {
+            var productMediaViewmodel = await _productMediaRepository.GetByProductIdAsync(product.Id ?? 0);
+            product.ProductImage = productMediaViewmodel.Where(p => p.DisplayOrder == 1 && !p.IsDeleted).Select(p => p.MediaUrl).FirstOrDefault();
+            product.ProductMedias = _mapper.Map<List<ProductMediasDto>>(productMediaViewmodel);
+        }
+
+        return productViewmodel;
     }
 
     public async Task<ProductDto?> UpdateRatings(int productId, decimal avgRating, int totalRatings)

@@ -5,6 +5,7 @@ using FluentValidation.AspNetCore;
 using HashidsNet;
 using Microservices.Shared;
 using Microservices.Shared.Protos;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -48,8 +49,14 @@ builder.Services.AddSwaggerGen();
 
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
-    serverOptions.Limits.MaxRequestBodySize = 8388608; // 80 MB
+    serverOptions.Limits.MaxRequestBodySize = 104857600;
 });
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 104857600; // 100 MB
+});
+
 
 builder.Services.AddGrpcClient<Category.CategoryClient>(o =>
 {
