@@ -64,8 +64,13 @@ public class ProductService : IProductService
             throw new ArgumentException("At least one media file is required.");
 
         var product = _mapper.Map<Product>(productDto);
+        product.AvgRating = (decimal?)0.0;
+        product.TotalReviews = 0;
+        var productMediaList = new List<ProductMedia>();
 
-        var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+        if (productDto.ProductMedias != null && productDto.ProductMedias.Any())
+        {
+            var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 
         var productMediaList = productDto.ProductMedias.Select(mediaDto =>
         {
