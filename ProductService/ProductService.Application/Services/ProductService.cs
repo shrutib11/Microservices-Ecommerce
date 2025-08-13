@@ -66,11 +66,8 @@ public class ProductService : IProductService
         var product = _mapper.Map<Product>(productDto);
         product.AvgRating = (decimal?)0.0;
         product.TotalReviews = 0;
-        var productMediaList = new List<ProductMedia>();
 
-        if (productDto.ProductMedias != null && productDto.ProductMedias.Any())
-        {
-            var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+        var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 
         var productMediaList = productDto.ProductMedias.Select(mediaDto =>
         {
