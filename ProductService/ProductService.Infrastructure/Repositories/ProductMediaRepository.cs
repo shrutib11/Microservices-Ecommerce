@@ -16,7 +16,7 @@ public class ProductMediaRepository : IProductMediaRepository
     public async Task<string?> GetProductImageById(int productId) =>
         await _context.ProductMedias.Where(p => p.ProductId == productId && p.IsDeleted == false && p.DisplayOrder == 1).Select(p => p.MediaUrl).FirstOrDefaultAsync();
 
-    public async Task<List<ProductMedia>> GetByProductIdAsync(int productId) =>
+    public async Task<List<ProductMedia>>  GetByProductIdAsync(int productId) =>
         await _context.ProductMedias.Where(p => p.ProductId == productId && p.IsDeleted == false).OrderBy(p => p.DisplayOrder).ToListAsync();
 
     public async Task AddAsync(ProductMedia productMedia)
@@ -25,9 +25,28 @@ public class ProductMediaRepository : IProductMediaRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task AddRangeAsync(List<ProductMedia> productMedias)
+    {
+        await _context.ProductMedias.AddRangeAsync(productMedias);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task UpdateAsync(ProductMedia productMedia)
     {
         _context.ProductMedias.Update(productMedia);
         await _context.SaveChangesAsync();
     }
+
+    public async Task UpdateRangeAsync(List<ProductMedia> medias)
+    {
+        _context.ProductMedias.UpdateRange(medias);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<ProductMedia>> GetByProductIdsAsync(List<int> productIds) =>
+        await _context.ProductMedias
+            .Where(p => productIds.Contains(p.ProductId) && !p.IsDeleted)
+            .OrderBy(p => p.DisplayOrder)
+            .ToListAsync();
+
 }

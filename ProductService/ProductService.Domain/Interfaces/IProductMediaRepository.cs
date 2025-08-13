@@ -10,5 +10,11 @@ public interface IProductMediaRepository
 
     Task AddAsync(ProductMedia productMedia);
 
+    Task AddRangeAsync(List<ProductMedia> productMedias);
+
     Task UpdateAsync(ProductMedia productMedia);
+
+    Task UpdateRangeAsync(List<ProductMedia> medias);
+
+    Task<List<ProductMedia>> GetByProductIdsAsync(List<int> productIds);
 }

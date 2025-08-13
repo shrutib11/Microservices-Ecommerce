@@ -4,16 +4,11 @@ using Microservices.Shared;
 using Microservices.Shared.Helpers;
 using Microservices.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
 using UserService.Application.DTOs;
 using UserService.Application.Interfaces;
-using UserService.Domain.Models;
 using System.Security.Claims;
-
 
 namespace UserService.API.Controllers
 {
@@ -63,7 +58,6 @@ namespace UserService.API.Controllers
             return Ok(ApiResponseHelper.Success(await _userService.GetAllUsers(), HttpStatusCode.OK));
         }
 
-
         [HttpPost("sendEmail")]
         public async Task<IActionResult> SendEmail( EmailRequestModel model)
         {
@@ -73,7 +67,11 @@ namespace UserService.API.Controllers
                 return NotFound(ApiResponseHelper.Error("User not Exist !! Register First !! ", HttpStatusCode.NotFound));
             }
             string link = "http://localHost:4200/user/reset-password/" + HashidsHelper.EncodeEmail(model.Email);
-            await EmailHelper.SendEmailAsync(model.Email, "Reset password", new EmailTemplateViewModel() { ResetPasswordUrl = link, Name = isUserExist.FirstName + " " + isUserExist.FirstName }, _configuration);
+            await EmailHelper.SendEmailAsync(model.Email, "Reset password", new EmailTemplateViewModel()
+            {
+                ResetPasswordUrl = link,
+                Name = isUserExist.FirstName + " " + isUserExist.FirstName
+            }, _configuration);
             return Ok();
         }
 
@@ -134,7 +132,6 @@ namespace UserService.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Update([FromForm] UserDto model)
         {
-            Console.WriteLine("hiii");
             UserDto? userModel = await _userService.UpdateUser(model);
             if (userModel == null)
             {
@@ -143,29 +140,29 @@ namespace UserService.API.Controllers
             return Ok(ApiResponseHelper.Success(userModel));
         }
 
-        [HttpPatch("TestPatch/{id}", Name = "TestPatchUser")]
-        public async Task<IActionResult> TestPatch(int id, [FromBody] JsonPatchDocument<User> PatchDoc)
-        {
-            if (PatchDoc == null)
-            {
-                return BadRequest(ApiResponseHelper.Error("Patch document cannot be null", HttpStatusCode.BadRequest));
-            }
-            UserDto? userDto = await _userService.GetUserById(id);
-            User user = _mapper.Map<User>(userDto);
+        // [HttpPatch("TestPatch/{id}", Name = "TestPatchUser")]
+        // public async Task<IActionResult> TestPatch(int id, [FromBody] JsonPatchDocument<User> PatchDoc)
+        // {
+        //     if (PatchDoc == null)
+        //     {
+        //         return BadRequest(ApiResponseHelper.Error("Patch document cannot be null", HttpStatusCode.BadRequest));
+        //     }
+        //     UserDto? userDto = await _userService.GetUserById(id);
+        //     User user = _mapper.Map<User>(userDto);
 
-            if (user == null)
-            {
-                return NotFound(ApiResponseHelper.Error("User not found", HttpStatusCode.NotFound));
-            }
+        //     if (user == null)
+        //     {
+        //         return NotFound(ApiResponseHelper.Error("User not found", HttpStatusCode.NotFound));
+        //     }
 
-            PatchDoc.ApplyTo(user, ModelState);
+        //     PatchDoc.ApplyTo(user, ModelState);
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ApiResponseHelper.Error("Invalid patch operation", HttpStatusCode.BadRequest));
-            }
-            return Ok(ApiResponseHelper.Success(user, HttpStatusCode.OK));
-        }
+        //     if (!ModelState.IsValid)
+        //     {
+        //         return BadRequest(ApiResponseHelper.Error("Invalid patch operation", HttpStatusCode.BadRequest));
+        //     }
+        //     return Ok(ApiResponseHelper.Success(user, HttpStatusCode.OK));
+        // }
 
         [HttpPost("logout")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
