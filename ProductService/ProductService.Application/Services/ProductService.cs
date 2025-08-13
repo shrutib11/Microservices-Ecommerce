@@ -2,6 +2,7 @@ using AutoMapper;
 using Microservices.Shared.Helpers;
 using ProductService.Application.DTOs;
 using ProductService.Application.Interfaces;
+using ProductService.Domain.Enums;
 using ProductService.Domain.Interfaces;
 using ProductService.Domain.Models;
 
@@ -27,11 +28,14 @@ public class ProductService : IProductService
         List<Product> products = await _productRepository.GetAllProductAsync();
         var productviewModels = _mapper.Map<List<ProductDto>>(products);
 
+        var productIds = productviewModels.Select(p => p.Id ?? 0).ToList();
+        var allMedias = await _productMediaRepository.GetByProductIdsAsync(productIds);
+
         foreach (var p in productviewModels)
         {
-            var productMediaViewModel = await _productMediaRepository.GetByProductIdAsync(p.Id ?? 0);
-            p.ProductImage = productMediaViewModel.Where(p => p.DisplayOrder == 1).Select(p => p.MediaUrl).FirstOrDefault();
-            p.ProductMedias = _mapper.Map<List<ProductMediasDto>>(productMediaViewModel);
+            var medias = allMedias.Where(m => m.ProductId == p.Id).ToList();
+            p.ProductImage = medias.Where(pm => pm.DisplayOrder == 1).Select(pm => pm.MediaUrl).FirstOrDefault();
+            p.ProductMedias = _mapper.Map<List<ProductMediasDto>>(medias);
         }
         return productviewModels;
     }
@@ -50,6 +54,15 @@ public class ProductService : IProductService
 
     public async Task<ProductDto> AddProductAsync(ProductDto productDto)
     {
+        var firstMedia = (productDto.ProductMedias
+            ?.FirstOrDefault(m => m.DisplayOrder == 1 && !m.IsDeleted)) ?? throw new ArgumentException("First media is required and must not be deleted.");
+
+        if (firstMedia.MediaType != MediaType.Image)
+            throw new ArgumentException("The first media must be an image. Videos are not allowed.");
+
+        if (productDto.ProductMedias == null || !productDto.ProductMedias.Any())
+            throw new ArgumentException("At least one media file is required.");
+
         var product = _mapper.Map<Product>(productDto);
         product.AvgRating = (decimal?)0.0;
         product.TotalReviews = 0;
@@ -59,26 +72,25 @@ public class ProductService : IProductService
         {
             var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 
-            foreach (var mediaDto in productDto.ProductMedias)
+        var productMediaList = productDto.ProductMedias.Select(mediaDto =>
+        {
+            if (mediaDto.MediaFile == null)
+                throw new ArgumentException("Media file cannot be null.");
+
+            string filename = ImageHelper.SaveImageWithName(mediaDto.MediaFile, productDto.Name, rootPath);
+
+            return new ProductMedia
             {
-                if (mediaDto.MediaFile == null)
-                    throw new ArgumentException("Media file cannot be null.");
-
-                string filename = ImageHelper.SaveImageWithName(mediaDto.MediaFile, productDto.Name, rootPath);
-
-                productMediaList.Add(new ProductMedia
-                {
-                    MediaType = mediaDto.MediaType,
-                    MediaUrl = filename,
-                    DisplayOrder = mediaDto.DisplayOrder
-                });
-            }
-        }
+                MediaType = mediaDto.MediaType,
+                MediaUrl = filename,
+                DisplayOrder = mediaDto.DisplayOrder
+            };
+        }).ToList();
 
         var savedProduct = await _productRepository.AddProductWithMediaAsync(product, productMediaList);
 
         var resultDto = _mapper.Map<ProductDto>(savedProduct.Product);
-        resultDto.ProductImage = savedProduct.MediaList.Where(p => p.DisplayOrder == 1 && !p.IsDeleted).Select(p => p.MediaUrl).FirstOrDefault();
+        resultDto.ProductImage = savedProduct.MediaList.Where(p => p.DisplayOrder == 1).Select(p => p.MediaUrl).FirstOrDefault();
         resultDto.ProductMedias = _mapper.Map<List<ProductMediasDto>>(savedProduct.MediaList);
 
         return resultDto;
@@ -86,6 +98,15 @@ public class ProductService : IProductService
 
     public async Task<ProductDto?> UpdateProductAsync(ProductDto productDto)
     {
+        if (productDto == null)
+            throw new ArgumentNullException(nameof(productDto));
+
+        var firstMedia = productDto.ProductMedias?
+            .FirstOrDefault(m => m.DisplayOrder == 1 && !m.IsDeleted);
+
+        if (firstMedia != null && firstMedia.MediaType != MediaType.Image)
+            throw new ArgumentException("The first media must be of type Image. Videos are not allowed.");
+
         using var transaction = await _unitOfWork.BeginTransactionAsync();
 
         try
@@ -97,69 +118,62 @@ public class ProductService : IProductService
             product.UpdatedAt = DateTime.Now;
             await _productRepository.UpdateAsync(product);
 
-            //When no change in media
-            var shouldProcessMedia = productDto.ProductMedias != null
-                    && productDto.ProductMedias.Any(m => m.MediaFile != null || m.Id != 0 || !string.IsNullOrEmpty(m.MediaUrl));
-
-            if (shouldProcessMedia && productDto.ProductMedias != null)
+            if (productDto.ProductMedias?.Any() == true)
             {
                 var existingMedias = await _productMediaRepository.GetByProductIdAsync(product.Id);
+                var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 
-                var incomingMediaIds = productDto.ProductMedias
-                    .Where(pm => pm.Id != 0).Select(pm => pm.Id).ToList();
-
-                foreach (var media in existingMedias)
+                // Mark deleted medias
+                var incomingIds = productDto.ProductMedias.Where(m => m.Id != 0).Select(m => m.Id);
+                foreach (var media in existingMedias.Where(em => !incomingIds.Contains(em.Id)))
                 {
-                    if (!incomingMediaIds.Contains(media.Id))
-                    {
-                        media.IsDeleted = true;
-                        await _productMediaRepository.UpdateAsync(media);
-                    }
+                    media.IsDeleted = true;
+                    media.UpdatedAt = DateTime.Now;
+
+                    var oldFilePath = Path.Combine(rootPath, media.MediaUrl.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
+                    if (File.Exists(oldFilePath))
+                        File.Delete(oldFilePath);
                 }
+                await _productMediaRepository.UpdateRangeAsync(existingMedias.Where(m => m.IsDeleted).ToList());
 
-                // Update or add media
-                foreach (var mediaDto in productDto.ProductMedias)
+                // Update 
+                foreach (var mediaDto in productDto.ProductMedias.Where(m => m.Id != 0))
                 {
-                    var id = mediaDto.Id;
-                    var formFile = mediaDto.MediaFile;
-                    var mediaType = mediaDto.MediaType;
-                    var displayOrder = mediaDto.DisplayOrder;
-
-                    if (id != 0)
+                    var existingMedia = existingMedias.FirstOrDefault(m => m.Id == mediaDto.Id);
+                    if (existingMedia != null)
                     {
-                        var existingMedia = existingMedias.FirstOrDefault(m => m.Id == id);
-                        if (existingMedia != null)
-                        {
-                            existingMedia.MediaType = mediaType;
-                            existingMedia.DisplayOrder = displayOrder;
+                        existingMedia.MediaType = mediaDto.MediaType;
+                        existingMedia.DisplayOrder = mediaDto.DisplayOrder;
 
-                            if (formFile != null)
-                            {
-                                var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-                                existingMedia.MediaUrl = ImageHelper.SaveImageWithName(formFile, product.Name, rootPath);
-                            }
-
-                            await _productMediaRepository.UpdateAsync(existingMedia);
-                        }
-                    }
-                    else
-                    {
-                        var newMedia = new ProductMedia
+                        if (mediaDto.MediaFile != null)
                         {
-                            ProductId = product.Id,
-                            MediaType = mediaType,
-                            DisplayOrder = displayOrder
-                        };
+                            var oldFilePath = Path.Combine(rootPath, existingMedia.MediaUrl.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
 
-                        if (formFile != null)
-                        {
-                            var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-                            newMedia.MediaUrl = ImageHelper.SaveImageWithName(formFile, product.Name, rootPath);
+                            existingMedia.MediaUrl = ImageHelper.SaveImageWithName(mediaDto.MediaFile, product.Name, rootPath);
+                            if (File.Exists(oldFilePath))
+                                File.Delete(oldFilePath);
                         }
 
-                        await _productMediaRepository.AddAsync(newMedia);
+                        existingMedia.UpdatedAt = DateTime.Now;
                     }
                 }
+                await _productMediaRepository.UpdateRangeAsync(existingMedias.Where(m => !m.IsDeleted).ToList());
+
+                // Add
+                var newMedias = productDto.ProductMedias
+                    .Where(m => m.Id == 0)
+                    .Select(m => new ProductMedia
+                    {
+                        ProductId = product.Id,
+                        MediaType = m.MediaType,
+                        DisplayOrder = m.DisplayOrder,
+                        MediaUrl = m.MediaFile != null
+                            ? ImageHelper.SaveImageWithName(m.MediaFile, product.Name, rootPath)
+                            : throw new ArgumentNullException("Media file cannot be empty", nameof(m.MediaFile))
+                    }).ToList();
+
+                if (newMedias.Any())
+                    await _productMediaRepository.AddRangeAsync(newMedias);
             }
 
             await transaction.CommitAsync();
@@ -167,7 +181,7 @@ public class ProductService : IProductService
             var savedProductMedias = await _productMediaRepository.GetByProductIdAsync(product.Id);
 
             var resultDto = _mapper.Map<ProductDto>(product);
-            resultDto.ProductImage = savedProductMedias.Where(p => p.DisplayOrder == 1).Select(p => p.MediaUrl).FirstOrDefault();
+            resultDto.ProductImage = savedProductMedias.FirstOrDefault(p => p.DisplayOrder == 1)?.MediaUrl;
             resultDto.ProductMedias = _mapper.Map<List<ProductMediasDto>>(savedProductMedias);
 
             return resultDto;
@@ -181,43 +195,65 @@ public class ProductService : IProductService
 
     public async Task<bool> DeleteProductAsync(int id)
     {
-        var product = await _productRepository.GetByIdAsync(id);
-        if (product == null) return false;
-        product.IsDeleted = true;
-        product.UpdatedAt = DateTime.Now;
-        await _productRepository.UpdateAsync(product);
-        return true;
+        using var transaction = await _unitOfWork.BeginTransactionAsync();
+
+        try
+        {
+            var product = await _productRepository.GetByIdAsync(id);
+            if (product == null) return false;
+
+            var productMedias = await _productMediaRepository.GetByProductIdAsync(id);
+            productMedias.ForEach(pm => pm.IsDeleted = true);
+            await _productMediaRepository.UpdateRangeAsync(productMedias);
+
+            product.IsDeleted = true;
+            product.UpdatedAt = DateTime.Now;
+            await _productRepository.UpdateAsync(product);
+
+            await transaction.CommitAsync();
+            return true;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task<List<ProductDto>> GetProductsByCategoryIdAsync(int categoryId)
     {
         var products = await _productRepository.GetProductsByCategoryIdAsync(categoryId);
-         var productViewmodel = _mapper.Map<List<ProductDto>>(products);
+        var productViewModels = _mapper.Map<List<ProductDto>>(products);
 
-        foreach (var product in productViewmodel)
+        var productIds = productViewModels.Select(p => p.Id ?? 0).ToList();
+        var allMedias = await _productMediaRepository.GetByProductIdsAsync(productIds);
+
+        foreach (var p in productViewModels)
         {
-            var productMediaViewmodel = await _productMediaRepository.GetByProductIdAsync(product.Id ?? 0);
-            product.ProductImage = productMediaViewmodel.Where(p => p.DisplayOrder == 1 && !p.IsDeleted).Select(p => p.MediaUrl).FirstOrDefault();
-            product.ProductMedias = _mapper.Map<List<ProductMediasDto>>(productMediaViewmodel);
+            var medias = allMedias.Where(m => m.ProductId == p.Id).ToList();
+            p.ProductImage = medias.Where(pm => pm.DisplayOrder == 1).Select(pm => pm.MediaUrl).FirstOrDefault();
+            p.ProductMedias = _mapper.Map<List<ProductMediasDto>>(medias);
         }
 
-        return productViewmodel;
-        // return _mapper.Map<List<ProductDto>>(products);
+        return productViewModels;
     }
 
     public async Task<List<ProductDto>> GetProductBySearchAsync(string searchTerm)
     {
         var products = await _productRepository.GetProductBySearch(searchTerm);
-        var productViewmodel = _mapper.Map<List<ProductDto>>(products);
+        var productviewModels = _mapper.Map<List<ProductDto>>(products);
 
-        foreach (var product in productViewmodel)
+        var productIds = productviewModels.Select(p => p.Id ?? 0).ToList();
+        var allMedias = await _productMediaRepository.GetByProductIdsAsync(productIds);
+
+        foreach (var p in productviewModels)
         {
-            var productMediaViewmodel = await _productMediaRepository.GetByProductIdAsync(product.Id ?? 0);
-            product.ProductImage = productMediaViewmodel.Where(p => p.DisplayOrder == 1 && !p.IsDeleted).Select(p => p.MediaUrl).FirstOrDefault();
-            product.ProductMedias = _mapper.Map<List<ProductMediasDto>>(productMediaViewmodel);
+            var medias = allMedias.Where(m => m.ProductId == p.Id).ToList();
+            p.ProductImage = medias.Where(pm => pm.DisplayOrder == 1).Select(pm => pm.MediaUrl).FirstOrDefault();
+            p.ProductMedias = _mapper.Map<List<ProductMediasDto>>(medias);
         }
 
-        return productViewmodel;
+        return productviewModels;
     }
 
     public async Task<ProductDto?> UpdateRatings(int productId, decimal avgRating, int totalRatings)
@@ -229,6 +265,8 @@ public class ProductService : IProductService
         product.TotalReviews = totalRatings;
 
         var updatedProduct = await _productRepository.UpdateAsync(product);
-        return _mapper.Map<ProductDto>(updatedProduct);
+        var productDto = _mapper.Map<ProductDto>(updatedProduct);
+        productDto.ProductImage = await _productMediaRepository.GetProductImageById(product.Id);
+        return productDto;
     }
 }

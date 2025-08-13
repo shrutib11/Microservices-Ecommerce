@@ -29,7 +29,7 @@ namespace UserService.Application.Services
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var now = DateTime.UtcNow;
-            var expires = now.AddMinutes(15);
+            var expires = now.AddHours(24);
 
             var claims = new[]
             {

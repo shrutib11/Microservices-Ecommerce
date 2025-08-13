@@ -298,11 +298,7 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4007}
             ],
             "UpstreamPathTemplate": "/rating/getbyproduct/{productId}",
-            "UpstreamHttpMethod": ["GET"],
-            "AuthenticationOptions": {
-                "AuthenticationProviderKey": "Bearer",
-                "AllowedScopes": []
-            }
+            "UpstreamHttpMethod": ["GET"]
         },
         {
             "DownstreamPathTemplate": "/api/Ratings/GetCustomerRatings/{productId}",
