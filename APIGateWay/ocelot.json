@@ -306,11 +306,7 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4007}
             ],
             "UpstreamPathTemplate": "/rating/getcustomerratings/{productId}",
-            "UpstreamHttpMethod": ["GET"],
-            "AuthenticationOptions": {
-                "AuthenticationProviderKey": "Bearer",
-                "AllowedScopes": []
-            }   
+            "UpstreamHttpMethod": ["GET"]
         }
     ],
     "GlobalConfiguration": {

@@ -24,6 +24,7 @@ public class RatingController : ControllerBase
         _userClient = userClient;
     }
 
+    [Authorize]
     [HttpPost("Add")]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status201Created)]
