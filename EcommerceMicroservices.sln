@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -58,6 +58,16 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatingService.Domain", "RatingService\RatingService.Domain\RatingService.Domain.csproj", "{285B2639-04C9-465E-8356-36286FADE607}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatingService.Infrastructure", "RatingService\RatingService.Infrastructure\RatingService.Infrastructure.csproj", "{3EE0DA05-84D6-4F96-BBE9-498A511065EC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NotificationService", "NotificationService", "{A16E9EB2-B548-4F7C-97A3-9326E829ACCC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService.API", "NotificationService\NotificationService.API\NotificationService.API.csproj", "{95B14198-5F34-461E-8A08-7E65E0B55D0C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService.Application", "NotificationService\NotificationService.Application\NotificationService.Application.csproj", "{3D529019-13E0-4BC7-AA6D-9E80363F7670}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService.Domain", "NotificationService\NotificationService.Domain\NotificationService.Domain.csproj", "{870A444A-56F0-4396-976D-9AFAF5E99E34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService.Infrastructure", "NotificationService\NotificationService.Infrastructure\NotificationService.Infrastructure.csproj", "{E117F438-AF8D-487C-AB07-6BFDDD296BE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -156,6 +166,22 @@ Global
 		{3EE0DA05-84D6-4F96-BBE9-498A511065EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EE0DA05-84D6-4F96-BBE9-498A511065EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EE0DA05-84D6-4F96-BBE9-498A511065EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95B14198-5F34-461E-8A08-7E65E0B55D0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95B14198-5F34-461E-8A08-7E65E0B55D0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95B14198-5F34-461E-8A08-7E65E0B55D0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95B14198-5F34-461E-8A08-7E65E0B55D0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D529019-13E0-4BC7-AA6D-9E80363F7670}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D529019-13E0-4BC7-AA6D-9E80363F7670}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D529019-13E0-4BC7-AA6D-9E80363F7670}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D529019-13E0-4BC7-AA6D-9E80363F7670}.Release|Any CPU.Build.0 = Release|Any CPU
+		{870A444A-56F0-4396-976D-9AFAF5E99E34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{870A444A-56F0-4396-976D-9AFAF5E99E34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{870A444A-56F0-4396-976D-9AFAF5E99E34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{870A444A-56F0-4396-976D-9AFAF5E99E34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E117F438-AF8D-487C-AB07-6BFDDD296BE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E117F438-AF8D-487C-AB07-6BFDDD296BE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E117F438-AF8D-487C-AB07-6BFDDD296BE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E117F438-AF8D-487C-AB07-6BFDDD296BE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3280BD1F-6E1E-4BFD-AE2D-87FB89DAB6BB} = {CADB126C-B592-486E-A354-7B7722BEFFF5}
@@ -178,5 +204,9 @@ Global
 		{6DCCB332-AB4C-4FFA-8CC6-7FA40B88EE97} = {F666F1FC-3C3C-4D01-9954-CDE6DA5611F7}
 		{285B2639-04C9-465E-8356-36286FADE607} = {F666F1FC-3C3C-4D01-9954-CDE6DA5611F7}
 		{3EE0DA05-84D6-4F96-BBE9-498A511065EC} = {F666F1FC-3C3C-4D01-9954-CDE6DA5611F7}
+		{95B14198-5F34-461E-8A08-7E65E0B55D0C} = {A16E9EB2-B548-4F7C-97A3-9326E829ACCC}
+		{3D529019-13E0-4BC7-AA6D-9E80363F7670} = {A16E9EB2-B548-4F7C-97A3-9326E829ACCC}
+		{870A444A-56F0-4396-976D-9AFAF5E99E34} = {A16E9EB2-B548-4F7C-97A3-9326E829ACCC}
+		{E117F438-AF8D-487C-AB07-6BFDDD296BE7} = {A16E9EB2-B548-4F7C-97A3-9326E829ACCC}
 	EndGlobalSection
 EndGlobal

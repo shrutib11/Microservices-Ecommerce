@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using ProductService.Domain;
 using ProductService.Domain.Models;
 
 namespace ProductService.Infrastructure;
@@ -32,7 +31,6 @@ public class ProductDbContext : DbContext
                 .HasDefaultValue(false);
 
             entity.Property(e => e.AvgRating).HasColumnType("decimal(3,2)");
-
         });
 
         modelBuilder.Entity<ProductMedia>(entity =>
@@ -85,7 +83,6 @@ public class ProductDbContext : DbContext
                CreatedAt = DateTime.Now,
                UpdatedAt = null
            }
-
        );
     }
 }
