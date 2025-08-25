@@ -5,15 +5,11 @@
     <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <PropertyGroup>
-</PropertyGroup>
-
-<!-- <PropertyGroup>
+  <PropertyGroup />
+  <!-- <PropertyGroup>
 <PreserveCompilationContext>true</PreserveCompilationContext>
   <CopyRefAssembliesToPublishDirectory>true</CopyRefAssembliesToPublishDirectory>
 </PropertyGroup> -->
-
-
   <ItemGroup>
     <PackageReference Include="Hashids.net" Version="1.7.0" />
     <PackageReference Include="MailKit" Version="4.10.0" />
@@ -37,5 +33,8 @@
   </ItemGroup>
   <ItemGroup>
     <Protobuf Include="Protos\category.proto" GrpcServices="None" />
+    <Protobuf Include="Protos\notification.proto"
+          GrpcServices="Both"
+          ProtoRoot="Protos" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 using Microservices.Shared;
 using Microservices.Shared.Protos;
 using Microsoft.EntityFrameworkCore;
+using NotificationService.API.GrpcServices;
 using NotificationService.Application.Interfaces;
 using NotificationService.Application.Mappings;
 using NotificationService.Domain.Interfaces;
@@ -25,8 +26,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddGrpcClient<User.UserClient>(o =>
 {
-    o.Address = new Uri("https://localhost:5006"); 
+    o.Address = new Uri("https://localhost:5006");
 });
+builder.Services.AddGrpc();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -42,5 +44,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGrpcService<NotificationGrpcService>();
 
 app.Run();
