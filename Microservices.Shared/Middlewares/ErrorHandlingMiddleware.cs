@@ -29,7 +29,7 @@ public class ErrorHandlingMiddleware
             }
             else
             {
-                if(exception.InnerException?.Message.Contains("duplicate key") == true)
+                if (exception.InnerException?.Message.Contains("duplicate key") == true)
                     _response = ApiResponseHelper.Error("You have already submitted a rating for this item.", HttpStatusCode.InternalServerError);
                 else
                     _response = ApiResponseHelper.Error("An unexpected error occurred. Please try again later.", HttpStatusCode.InternalServerError);

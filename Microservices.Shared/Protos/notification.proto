@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option csharp_namespace = "Microservices.Shared.Protos";
+
+package notification;
+
+service Notification {
+  rpc SendOrderEvent (OrderEventRequest) returns (OrderEventResponse);
+}
+
+message OrderEventRequest {
+  string orderId = 1;
+  string userId = 2;
+  string status = 3; // e.g., "Shipped", "Delivered"
+  NotificationType type = 4;
+}
+
+message OrderEventResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+enum NotificationType {
+  ORDER = 0; // default & only allowed type
+}
