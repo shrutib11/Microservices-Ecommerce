@@ -6,4 +6,6 @@ public interface INotificationRepository
 {
     Task<(Notifications notifications, List<UserNotifications> userNotifications)>
         AddNotificationsAsync(Notifications notifications, List<UserNotifications> userNotifications);
+
+    Task<Notifications?> GetByIdAsync(int notificationId);
 }

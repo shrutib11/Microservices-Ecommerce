@@ -10,11 +10,14 @@ public class NotificationService : INotificationService
 {
     private readonly INotificationRepository _notificationRepository;
 
+    private readonly IUserNotificationRepository _userNotificationRepository;
+
     private readonly IMapper _mapper;
 
-    public NotificationService(INotificationRepository notificationRepository, IMapper mapper)
+    public NotificationService(INotificationRepository notificationRepository, IUserNotificationRepository userNotificationRepository, IMapper mapper)
     {
         _notificationRepository = notificationRepository;
+        _userNotificationRepository = userNotificationRepository;
         _mapper = mapper;
     }
 
@@ -68,5 +71,56 @@ public class NotificationService : INotificationService
         resultDto.UserNotifications = _mapper.Map<List<UserNotificationsDto>>(savedNotification.userNotifications);
 
         return resultDto;
+    }
+
+    public async Task<List<NotificationDto>> GetByUserIdAsync(int userId)
+    {
+        var userNotifications = await _userNotificationRepository.GetUserNotificationsAsync(userId);
+
+        var notificationDtos = userNotifications.Select(un =>
+        {
+            var notificationDto = _mapper.Map<NotificationDto>(un.Notifications);
+
+            notificationDto.UserNotifications = new List<UserNotificationsDto>
+            {
+                _mapper.Map<UserNotificationsDto>(un)
+            };
+
+            return notificationDto;
+        }).ToList();
+
+        return notificationDtos;
+    }
+
+    public async Task<int> GetUnreadCountAsync(int userId)
+    {
+        return await _userNotificationRepository.GetUnreadNotificationsCountAsync(userId);
+    }
+
+    public async Task<NotificationDto?> MarkAsReadAsync(int notificationId, int userId)
+    {
+        var userNotification = await _userNotificationRepository.GetNotificationByUserIdAsync(notificationId, userId);
+
+        if (userNotification == null)
+            return null;
+
+        userNotification.IsRead = true;
+        userNotification.UpdatedAt = DateTime.UtcNow;
+
+        await _userNotificationRepository.UpdateUserNotificationAsync(userNotification);
+
+        var notification = await _notificationRepository.GetByIdAsync(userNotification.NotificationId);
+        if (notification == null) return null;
+
+        var notificationDto = _mapper.Map<NotificationDto>(notification);
+
+        var userNotificationsDto = _mapper.Map<UserNotificationsDto>(userNotification);
+
+        notificationDto.UserNotifications = new List<UserNotificationsDto>
+        {
+            userNotificationsDto
+        };
+
+        return notificationDto;
     }
 }

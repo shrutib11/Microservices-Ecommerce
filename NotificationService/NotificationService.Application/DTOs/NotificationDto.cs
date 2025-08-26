@@ -21,6 +21,8 @@ public class UserNotificationsDto
 
     public int UserId { get; set; }
 
+    public bool IsRead { get; set; }
+
     public int NotificationId { get; set; }
 }
 

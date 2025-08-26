@@ -50,4 +50,53 @@ public class NotificationController : ControllerBase
     //     var addedNotification = await _notificationService.AddNotificationsAsync(orderDto);
     //     return Ok(ApiResponseHelper.Success(addedNotification, HttpStatusCode.Created));
     // }
+
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetByUserId(int userId)
+    {
+        var response = await _userClient.GetUserByIdAsync(new GetUserByIdRequest
+        {
+            UserId = userId
+        });
+
+        if (!response.IsFound)
+        {
+            return BadRequest(ApiResponseHelper.Error("User does not exist.", HttpStatusCode.BadRequest));
+        }
+
+        var notifications = await _notificationService.GetByUserIdAsync(userId);
+
+        return Ok(ApiResponseHelper.Success(notifications, HttpStatusCode.OK));
+    }
+
+    [HttpGet("unread-count/{userId}")]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetUnreadCount(int userId)
+    {
+        var response = await _userClient.GetUserByIdAsync(new GetUserByIdRequest
+        {
+            UserId = userId
+        });
+
+        if (!response.IsFound)
+        {
+            return BadRequest(ApiResponseHelper.Error("User does not exist.", HttpStatusCode.BadRequest));
+        }
+
+        var count = await _notificationService.GetUnreadCountAsync(userId);
+
+        return Ok(ApiResponseHelper.Success(count, HttpStatusCode.OK));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> MarkAsRead([FromForm] int notificationId, [FromForm]int userId)
+    {
+        var notification = await _notificationService.MarkAsReadAsync(notificationId, userId);
+
+        if (notification == null) return NotFound(ApiResponseHelper.Error("Notification not found", HttpStatusCode.NotFound));
+        return Ok(ApiResponseHelper.Success(notification, HttpStatusCode.OK));
+    }
 }
