@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using NotificationService.Domain.Interfaces;
 using NotificationService.Domain.Models;
 
@@ -34,5 +35,10 @@ public class NotificationsRepository : INotificationRepository
             await transaction.RollbackAsync();
             throw;
         }
+    }
+
+    public async Task<Notifications?> GetByIdAsync(int notificationId)
+    {
+        return await _context.Notifications.Where(n => n.Id == notificationId).FirstOrDefaultAsync();
     }
 }

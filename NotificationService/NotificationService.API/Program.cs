@@ -19,6 +19,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 builder.Services.AddScoped<INotificationRepository, NotificationsRepository>();
+builder.Services.AddScoped<IUserNotificationRepository, UserNotificationsRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService.Application.Services.NotificationService>();
 builder.Services.AddAutoMapper(typeof(NotificationProfile));
 builder.Services.AddAutoMapper(typeof(UserNotificationProfile));
