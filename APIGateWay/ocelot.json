@@ -209,6 +209,14 @@
             "UpstreamHttpMethod": ["GET"]
         },
         {
+            "DownstreamPathTemplate": "/api/User/logout",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4000}
+            ],
+            "UpstreamPathTemplate": "/user/logout",
+            "UpstreamHttpMethod": ["GET"]
+        },
+        {
             "DownstreamPathTemplate": "/api/cart/by-id/{id}",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4005}

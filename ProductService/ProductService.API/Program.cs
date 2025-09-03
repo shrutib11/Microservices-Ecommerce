@@ -1,14 +1,14 @@
-using System.Text;
+using System.Security.Claims;
 using System.Text.Json.Serialization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using HashidsNet;
 using Microservices.Shared;
 using Microservices.Shared.Protos;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using ProductService.API.GrpcServices;
 using ProductService.Application.Interfaces;
 using ProductService.Application.Validators;
@@ -30,6 +30,7 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
+
 builder.Services.AddFluentValidationAutoValidation(options =>
 {
     options.DisableDataAnnotationsValidation = true;
@@ -45,7 +46,6 @@ builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAss
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddGrpc();
-builder.Services.AddSwaggerGen();
 
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
@@ -65,56 +65,66 @@ builder.Services.AddGrpcClient<Category.CategoryClient>(o =>
 
 builder.Services.AddHttpsRedirection(options =>
 {
-    options.HttpsPort = 4002; 
+    options.HttpsPort = 4002;
 });
 
-var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer("Bearer", options =>
+var jwtSection = builder.Configuration.GetSection("Jwt");
+var authority = jwtSection["Authority"];
+var requireHttps = bool.Parse(jwtSection["RequireHttpsMetadata"] ?? "false");
+var audiences = jwtSection.GetSection("Audiences").Get<string[]>();
+
+// Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        options.TokenValidationParameters = new()
+        options.Authority = authority;
+        options.RequireHttpsMetadata = requireHttps;
+
+        options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = false,
+            ValidateIssuer = true,
+            ValidIssuer = authority,
+
             ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidAudience = jwtSettings?.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings!.Key)),
+            ValidAudiences = audiences,
+
+            RoleClaimType = ClaimTypes.Role,
+            NameClaimType = "preferred_username"
         };
     });
 
+
 builder.Services.AddSwaggerGen(c =>
 {
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = SecuritySchemeType.Http,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
         Scheme = "Bearer",
         BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Enter 'Bearer' followed by your JWT token.\n\nExample: Bearer eyJhbGciOiJIUzI1NiIsInR..."
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Enter: **Bearer {your JWT token}**"
     });
 
-    //tells Swagger that all endpoints will require this "Bearer" security scheme 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+{
         {
-            new OpenApiSecurityScheme
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
                 {
-                    Type = ReferenceType.SecurityScheme,
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 }
             },
-            Array.Empty<string>()
+            new string[] {}
         }
-    });
+});
 });
 
 builder.Services.AddAuthorization();
+
 var app = builder.Build();
 app.UseHttpsRedirection();
 app.UseMiddleware<ErrorHandlingMiddleware>();
@@ -133,3 +143,49 @@ app.MapControllers();
 app.MapGrpcService<ProductGrpcService>();
 
 app.Run();
+
+// var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
+// builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+
+// builder.Services.AddAuthentication("Bearer")
+//     .AddJwtBearer("Bearer", options =>
+//     {
+//         options.TokenValidationParameters = new()
+//         {
+//             ValidateIssuer = false,
+//             ValidateAudience = true,
+//             ValidateLifetime = true,
+//             ValidateIssuerSigningKey = true,
+//             ValidAudience = jwtSettings?.Audience,
+//             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings!.Key)),
+//         };
+//     });
+
+// builder.Services.AddSwaggerGen(c =>
+// {
+//     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+//     {
+//         Name = "Authorization",
+//         Type = SecuritySchemeType.Http,
+//         Scheme = "Bearer",
+//         BearerFormat = "JWT",
+//         In = ParameterLocation.Header,
+//         Description = "Enter 'Bearer' followed by your JWT token.\n\nExample: Bearer eyJhbGciOiJIUzI1NiIsInR..."
+//     });
+
+//     //tells Swagger that all endpoints will require this "Bearer" security scheme 
+//     c.AddSecurityRequirement(new OpenApiSecurityRequirement
+//     {
+//         {
+//             new OpenApiSecurityScheme
+//             {
+//                 Reference = new OpenApiReference
+//                 {
+//                     Type = ReferenceType.SecurityScheme,
+//                     Id = "Bearer"
+//                 }
+//             },
+//             Array.Empty<string>()
+//         }
+//     });
+// });

@@ -1,8 +1,10 @@
+using System.Security.Claims;
 using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microservices.Shared;
 using Microservices.Shared.Protos;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -36,8 +38,6 @@ builder.Services.AddAutoMapper(cfg =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 builder.Services.AddHttpsRedirection(options =>
 {
     options.HttpsPort = 4009;
@@ -49,57 +49,61 @@ builder.Services.AddGrpcClient<Notification.NotificationClient>(o =>
 });
 
 
-var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
+var jwtSection = builder.Configuration.GetSection("Jwt");
+var authority = jwtSection["Authority"];
+var requireHttps = bool.Parse(jwtSection["RequireHttpsMetadata"] ?? "false");
+var audiences = jwtSection.GetSection("Audiences").Get<string[]>();
 
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
-
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer("Bearer", options =>
+// Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        options.TokenValidationParameters = new()
+        options.Authority = authority;
+        options.RequireHttpsMetadata = requireHttps;
+
+        options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
+            ValidIssuer = authority,
+
             ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings?.Issuer,
-            ValidAudience = jwtSettings?.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings!.Key))
+            ValidAudiences = audiences,
+
+            RoleClaimType = ClaimTypes.Role,
+            NameClaimType = "preferred_username"
         };
     });
 
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = SecuritySchemeType.Http,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
         Scheme = "Bearer",
         BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Enter 'Bearer' followed by your JWT token."
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Enter: **Bearer {your JWT token}**"
     });
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+{
         {
-            new OpenApiSecurityScheme
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
                 {
-                    Type = ReferenceType.SecurityScheme,
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 }
             },
-            Array.Empty<string>()
+            new string[] {}
         }
-    });
+});
 });
 
-
 builder.Services.AddAuthorization();
-
 
 var app = builder.Build();
 

@@ -1,9 +1,9 @@
-using System.IdentityModel.Tokens.Jwt;
+// using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace Microservices.Shared.Middlewares;
 

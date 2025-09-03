@@ -32,7 +32,8 @@ public class ErrorHandlingMiddleware
                 if (exception.InnerException?.Message.Contains("duplicate key") == true)
                     _response = ApiResponseHelper.Error("You have already submitted a rating for this item.", HttpStatusCode.InternalServerError);
                 else
-                    _response = ApiResponseHelper.Error("An unexpected error occurred. Please try again later.", HttpStatusCode.InternalServerError);
+                    // _response = ApiResponseHelper.Error("An unexpected error occurred. Please try again later.", HttpStatusCode.InternalServerError);
+                    _response = ApiResponseHelper.Error(exception.Message, HttpStatusCode.InternalServerError);
             }
 
             context.Response.StatusCode = (int)_response.StatusCode;
