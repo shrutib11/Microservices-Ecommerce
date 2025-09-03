@@ -5,12 +5,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Application.DTOs;
 using OrderService.Application.Interfaces;
-using OrderService.Domain.Enums;
 
 namespace OrderService.API.Controllers;
 
 // [ApiController]
-// [Authorize]
+[Authorize]
 [Route("api/[controller]")]
 public class OrderController : ControllerBase
 {

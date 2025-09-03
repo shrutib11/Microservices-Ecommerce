@@ -20,12 +20,14 @@ namespace UserService.API.Controllers
         private readonly IMapper _mapper;
         private readonly IJwtService _jwtService;
         private IConfiguration _configuration;
-        public UserController(IUserService userService, IConfiguration configuration, IMapper mapper, IJwtService jwtService)
+        private readonly IHttpClientFactory _httpClientFactory;
+        public UserController(IUserService userService, IConfiguration configuration, IMapper mapper, IJwtService jwtService, IHttpClientFactory httpClientFactory)
         {
             _userService = userService;
             _mapper = mapper;
             _configuration = configuration;
             _jwtService = jwtService;
+            _httpClientFactory = httpClientFactory;
         }
 
         [AllowAnonymous]
@@ -166,16 +168,45 @@ namespace UserService.API.Controllers
 
         [HttpPost("logout")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout([FromBody] string refreshToken)
         {
-            var useremail = User.FindFirst(ClaimTypes.Email)?.Value;
+            // var useremail = User.FindFirst(ClaimTypes.Email)?.Value;
 
-            if (string.IsNullOrEmpty(useremail))
+            // if (string.IsNullOrEmpty(useremail))
+            // {
+            //     return Unauthorized(ApiResponseHelper.Error("User not authenticated.", HttpStatusCode.Unauthorized));
+            // }
+
+            // return Ok("Logged out successfully.");
+            if (string.IsNullOrEmpty(refreshToken))
             {
-                return Unauthorized(ApiResponseHelper.Error("User not authenticated.", HttpStatusCode.Unauthorized));
+                return Unauthorized(ApiResponseHelper.Error("Refresh token is expired.", HttpStatusCode.Unauthorized));
             }
 
-            return Ok("Logged out successfully.");
+            var authority = _configuration["Jwt:Authority"];
+            var clientId = _configuration["Jwt:ClientId"];
+            var clientSecret = _configuration["Jwt:ClientSecret"];
+
+            var client = _httpClientFactory.CreateClient();
+
+            var formData = new Dictionary<string, string>
+            {
+                { "client_id", clientId! },
+                { "client_secret", clientSecret! },
+                { "refresh_token", refreshToken }
+            };
+
+            var response = await client.PostAsync($"{authority}/protocol/openid-connect/logout", new FormUrlEncodedContent(formData));
+
+            if(response.IsSuccessStatusCode)
+            {
+                return Ok("Logged out successfully.");
+            }
+            else
+            {
+                return Unauthorized(ApiResponseHelper.Error("Failed to log out.", HttpStatusCode.Unauthorized));
+            }
+
         }
     }
 }

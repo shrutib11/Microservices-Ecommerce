@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -21,7 +22,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().AddNewtonsoftJson();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 var conn = builder.Configuration.GetConnectionString("SupportDeskConnection");
 builder.Services.AddDbContext<UserServiceDbContext>(options => options.UseNpgsql(conn));
 
@@ -31,70 +31,75 @@ builder.Services.AddScoped<IUserService, UserService.Application.Services.UserSe
 builder.Services.AddScoped<IJwtService, UserService.Application.Services.JwtService>();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly(), typeof(UserProfile).Assembly);
 
-builder.Services.AddSwaggerGen(c =>
-    {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "User MicroService", Version = "v1" });
-    });
+var jwtSection = builder.Configuration.GetSection("Jwt");
+var authority = jwtSection["Authority"];
+var requireHttps = bool.Parse(jwtSection["RequireHttpsMetadata"] ?? "false");
+var audiences = jwtSection.GetSection("Audiences").Get<string[]>();
 
+// Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(option =>
+    .AddJwtBearer(options =>
     {
-        option.TokenValidationParameters = new TokenValidationParameters
+        options.Authority = authority;
+        options.RequireHttpsMetadata = requireHttps;
+
+        options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
+            ValidIssuer = authority,
+
             ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+            ValidAudiences = audiences,
+
+            RoleClaimType = ClaimTypes.Role,
+            NameClaimType = "preferred_username"
         };
     });
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
-});
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = SecuritySchemeType.Http,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
         Scheme = "Bearer",
         BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Enter 'Bearer' followed by your JWT token.\n\nExample: Bearer eyJhbGciOiJIUzI1NiIsInR..."
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Enter: **Bearer {your JWT token}**"
     });
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
     {
         {
-            new OpenApiSecurityScheme
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
                 {
-                    Type = ReferenceType.SecurityScheme,
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 }
             },
-            Array.Empty<string>()
+            new string[] {}
         }
     });
 });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddFluentValidationAutoValidation(options =>
 {
     options.DisableDataAnnotationsValidation = true;
 });
+
 builder.Services.AddValidatorsFromAssemblyContaining<UserDtoValidator>();
 builder.Services.AddGrpc();
 builder.Services.AddHttpsRedirection(options =>
 {
     options.HttpsPort = 4000;
 });
+
+
 var app = builder.Build();
 app.UseHttpsRedirection();
 if (app.Environment.IsDevelopment())
@@ -108,12 +113,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseStaticFiles();
-app.UseAuthorization();
-
+app.UseHttpsRedirection();
 app.MapControllers();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.MapGrpcService<UserGrpcService>();
