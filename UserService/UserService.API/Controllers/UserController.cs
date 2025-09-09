@@ -170,14 +170,6 @@ namespace UserService.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Logout([FromBody] string refreshToken)
         {
-            // var useremail = User.FindFirst(ClaimTypes.Email)?.Value;
-
-            // if (string.IsNullOrEmpty(useremail))
-            // {
-            //     return Unauthorized(ApiResponseHelper.Error("User not authenticated.", HttpStatusCode.Unauthorized));
-            // }
-
-            // return Ok("Logged out successfully.");
             if (string.IsNullOrEmpty(refreshToken))
             {
                 return Unauthorized(ApiResponseHelper.Error("Refresh token is expired.", HttpStatusCode.Unauthorized));
@@ -185,14 +177,12 @@ namespace UserService.API.Controllers
 
             var authority = _configuration["Jwt:Authority"];
             var clientId = _configuration["Jwt:ClientId"];
-            var clientSecret = _configuration["Jwt:ClientSecret"];
 
             var client = _httpClientFactory.CreateClient();
 
             var formData = new Dictionary<string, string>
             {
                 { "client_id", clientId! },
-                { "client_secret", clientSecret! },
                 { "refresh_token", refreshToken }
             };
 
@@ -200,7 +190,7 @@ namespace UserService.API.Controllers
 
             if(response.IsSuccessStatusCode)
             {
-                return Ok("Logged out successfully.");
+                return Ok(ApiResponseHelper.Success("Logged out successfully.", HttpStatusCode.OK));
             }
             else
             {

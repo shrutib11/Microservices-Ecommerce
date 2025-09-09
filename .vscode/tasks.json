@@ -2,6 +2,12 @@
     "version": "2.0.0",
     "tasks": [
       {
+        "label": "Run UserService",
+        "type": "shell",
+        "command": "dotnet run --project ./UserService/UserService.API",
+        "problemMatcher": []
+      },
+      {
         "label": "Run CategoryService",
         "type": "shell",
         "command": "dotnet run --project ./CategoryService/CategoryService.API",
@@ -11,12 +17,6 @@
         "label": "Run ProductService",
         "type": "shell",
         "command": "dotnet run --project ./ProductService/ProductService.API",
-        "problemMatcher": []
-      },
-      {
-        "label": "Run UserService",
-        "type": "shell",
-        "command": "dotnet run --project ./UserService/UserService.API",
         "problemMatcher": []
       },
       {
@@ -32,20 +32,27 @@
         "problemMatcher": []
       },
       {
+        "label": "Run NotificationService",
+        "type": "shell",
+        "command": "dotnet run --project ./NotificationService/NotificationService.API",
+        "problemMatcher": []
+      },
+      {
+        "label": "Run OrderService",
+        "type": "shell",
+        "command": "dotnet run --project ./OrderService/OrderService.API",
+        "problemMatcher": []
+      },
+      {
         "label": "Run APIGateWay",
         "type": "shell",
         "command": "dotnet run --project ./APIGateWay",
         "problemMatcher": []
       },
       {
-        "label": "Run RatingService",
-        "type": "shell",
-        "command": "dotnet run --project ./RatingService/RatingService.API",
-        "problemMatcher": []
-      },
-      {
         "label": "Run All Services",
-        "dependsOn": ["Run CategoryService", "Run ProductService", "Run UserService", "Run APIGateWay", "Run CartService", "Run RatingService"],
+        "dependsOn": ["Run UserService","Run CategoryService", "Run ProductService", "Run CartService", "Run RatingService",
+           "Run NotificationService", "Run OrderService","Run APIGateWay",  ],
         "dependsOrder": "parallel"
       }
     ]
