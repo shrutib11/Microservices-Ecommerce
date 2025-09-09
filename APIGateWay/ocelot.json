@@ -214,7 +214,7 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4000}
             ],
             "UpstreamPathTemplate": "/user/logout",
-            "UpstreamHttpMethod": ["GET"]
+            "UpstreamHttpMethod": ["POST"]
         },
         {
             "DownstreamPathTemplate": "/api/cart/by-id/{id}",

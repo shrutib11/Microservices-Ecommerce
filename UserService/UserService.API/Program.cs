@@ -99,6 +99,8 @@ builder.Services.AddHttpsRedirection(options =>
     options.HttpsPort = 4000;
 });
 
+builder.Services.AddHttpClient();
+
 
 var app = builder.Build();
 app.UseHttpsRedirection();
