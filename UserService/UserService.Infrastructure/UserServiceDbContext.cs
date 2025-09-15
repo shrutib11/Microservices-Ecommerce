@@ -20,6 +20,14 @@ namespace UserService.Infrastructure
             modelBuilder.Entity<User>().Property(p => p.UpdatedAt)
                 .HasColumnType("timestamp without time zone");
 
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.KeycloackId)
+                .IsUnique();
+
             modelBuilder.Entity<User>().HasData(
             new User
             {

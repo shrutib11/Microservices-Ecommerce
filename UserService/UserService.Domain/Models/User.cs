@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace UserService.Domain.Models
 {
@@ -42,7 +38,11 @@ namespace UserService.Domain.Models
         [MaxLength(200)]
         public string? ProfileImage { get; set; }
 
-        public string? Role { get; set; } 
+        public string? Role { get; set; }
+
+        [Required]
+        [MaxLength(36)]
+        public string KeycloackId { get; set; } = string.Empty;
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;

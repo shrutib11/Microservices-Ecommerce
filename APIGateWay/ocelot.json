@@ -141,6 +141,15 @@
             }
         },
         {
+            "DownstreamPathTemplate": "/api/User/GetUserIdFromKeycloak/{keycloakId}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+              { "Host": "localhost", "Port": 4000 }
+            ],
+            "UpstreamPathTemplate": "/user/GetUserIdFromKeycloak/{keycloakId}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
             "DownstreamPathTemplate": "/api/User/GetById/{id}",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4000}

@@ -47,10 +47,16 @@ namespace UserService.Infrastructure.Repositories
                 return user;
             throw new Exception("User update failed.");
         }
-        
+
         public async Task<List<User>> GetByIdsAsync(List<int> userIds)
         {
             return await _context.Users.Where(u => userIds.Contains(u.Id)).ToListAsync() ?? throw new Exception("An error occurred while retrieving users by IDs.");
+        }
+
+        public async Task<int> GetIdFromKeycloackId(string keycloakUserId)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.KeycloackId == keycloakUserId);
+            return user?.Id ?? 0;
         }
     }
 }

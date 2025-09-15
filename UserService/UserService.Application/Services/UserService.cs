@@ -90,5 +90,12 @@ namespace UserService.Application.Services
             return _mapper.Map<List<UserDto>>(users);
         }
 
+        public async Task<int> GetUserIdByKeycloackId(string keycloakUserId)
+        {
+            return await _userRepository.GetIdFromKeycloackId(keycloakUserId);
+        }
+
+        
+
     }
 }
