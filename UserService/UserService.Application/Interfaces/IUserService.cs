@@ -16,5 +16,6 @@ namespace UserService.Application.Interfaces
         public Task<UserDto?> UpdateUser(UserDto model);
         public Task<UserDto?> GetUserByEmail(string email);
         public Task<List<UserDto>> GetUsersByIds(List<int> userIds);
+        public Task<int> GetUserIdByKeycloackId(string keycloakUserId);
     }
 }

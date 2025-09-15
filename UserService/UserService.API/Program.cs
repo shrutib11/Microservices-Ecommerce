@@ -22,7 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().AddNewtonsoftJson();
 
 builder.Services.AddEndpointsApiExplorer();
-var conn = builder.Configuration.GetConnectionString("SupportDeskConnection");
+var conn = builder.Configuration.GetConnectionString("UserServiceConnection");
 builder.Services.AddDbContext<UserServiceDbContext>(options => options.UseNpgsql(conn));
 
 builder.Services.AddSingleton<IHashids>(_ => new Hashids("mysecretsalt12345", 8));
@@ -32,9 +32,14 @@ builder.Services.AddScoped<IJwtService, UserService.Application.Services.JwtServ
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly(), typeof(UserProfile).Assembly);
 
 var jwtSection = builder.Configuration.GetSection("Jwt");
+var angularClientConfig = builder.Configuration.GetSection("Jwt:Clients:AngularClient");
+
+// Extract the AngularClient configuration
+var clientId = angularClientConfig["ClientId"];
+var audiences = angularClientConfig.GetSection("Audiences").Get<string[]>();
 var authority = jwtSection["Authority"];
 var requireHttps = bool.Parse(jwtSection["RequireHttpsMetadata"] ?? "false");
-var audiences = jwtSection.GetSection("Audiences").Get<string[]>();
+// var audiences = jwtSection.GetSection("Audiences").Get<string[]>();
 
 // Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -59,24 +64,24 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
         BearerFormat = "JWT",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        In = ParameterLocation.Header,
         Description = "Enter: **Bearer {your JWT token}**"
     });
 
-    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            new OpenApiSecurityScheme
             {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                Reference = new OpenApiReference
                 {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 }
             },
@@ -103,24 +108,36 @@ builder.Services.AddHttpClient();
 
 
 var app = builder.Build();
-app.UseHttpsRedirection();
+
+// if (app.Environment.IsDevelopment())
+// {
+//     app.UseSwagger();
+//     app.UseSwaggerUI(c =>
+//     {
+//         c.SwaggerEndpoint("/swagger/v1/swagger.json", "User MicroService");
+//     });
+// }
+
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "User MicroService");
     });
-
-    app.UseSwaggerUI();
 }
 
+app.UseHttpsRedirection();
+
 app.UseStaticFiles();
+app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseHttpsRedirection();
-app.MapControllers();
+
 app.UseMiddleware<ErrorHandlingMiddleware>();
+app.MapControllers();
 app.MapGrpcService<UserGrpcService>();
 
 app.Run();

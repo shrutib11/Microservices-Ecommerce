@@ -49,6 +49,11 @@ namespace UserService.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<string>("KeycloackId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -80,6 +85,12 @@ namespace UserService.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("KeycloackId")
+                        .IsUnique();
+
                     b.ToTable("Users");
 
                     b.HasData(
@@ -87,9 +98,10 @@ namespace UserService.Infrastructure.Migrations
                         {
                             Id = 1,
                             Address = "Amreli, India",
-                            CreatedAt = new DateTime(2025, 7, 17, 13, 42, 18, 645, DateTimeKind.Local).AddTicks(5967),
+                            CreatedAt = new DateTime(2025, 9, 12, 10, 28, 56, 565, DateTimeKind.Local).AddTicks(8046),
                             Email = "dhruvilchotaliya@gmail.com",
                             FirstName = "Dhruvil",
+                            KeycloackId = "",
                             LastName = "Chotaliya",
                             Password = "Dhruvil@123",
                             PhoneNumber = "1234567890",
@@ -99,9 +111,10 @@ namespace UserService.Infrastructure.Migrations
                         {
                             Id = 2,
                             Address = "Ahmedabad, India",
-                            CreatedAt = new DateTime(2025, 7, 17, 13, 42, 18, 645, DateTimeKind.Local).AddTicks(5970),
+                            CreatedAt = new DateTime(2025, 9, 12, 10, 28, 56, 565, DateTimeKind.Local).AddTicks(8051),
                             Email = "shrutibhalodia@gmail.com",
                             FirstName = "Shruti",
+                            KeycloackId = "",
                             LastName = "Bhalodia",
                             Password = "Shruti@123",
                             PhoneNumber = "1234567890",
@@ -111,9 +124,10 @@ namespace UserService.Infrastructure.Migrations
                         {
                             Id = 3,
                             Address = "Ahmedabad, India",
-                            CreatedAt = new DateTime(2025, 7, 17, 13, 42, 18, 645, DateTimeKind.Local).AddTicks(5973),
+                            CreatedAt = new DateTime(2025, 9, 12, 10, 28, 56, 565, DateTimeKind.Local).AddTicks(8053),
                             Email = "richakamani@gmail.com",
                             FirstName = "Richa",
+                            KeycloackId = "",
                             LastName = "Kamani",
                             Password = "Richa@123",
                             PhoneNumber = "1234567890",

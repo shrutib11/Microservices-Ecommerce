@@ -14,5 +14,6 @@ namespace UserService.Domain.Interfaces
         public Task<User?> GetUserByIdSysnc(int id);
         public Task<User> UpdateUserAsync(User user);
         public Task<List<User>> GetByIdsAsync(List<int> userIds);
+        public Task<int> GetIdFromKeycloackId(string keycloakUserId);
     }
 }
