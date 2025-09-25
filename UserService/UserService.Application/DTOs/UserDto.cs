@@ -15,6 +15,5 @@ namespace UserService.Application.DTOs
         public IFormFile? UserFile { get; set; }
         public string PinCode { get; set; } = string.Empty;
         public string? ProfileImage { get; set; }
-        public string? KeycloackId { get; set; }
     }
 }

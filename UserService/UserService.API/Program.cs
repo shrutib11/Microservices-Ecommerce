@@ -13,6 +13,7 @@ using UserService.API.GrpcServices;
 using UserService.API.Validators;
 using UserService.Application.Interfaces;
 using UserService.Application.Mappings;
+using UserService.Application.Services;
 using UserService.Domain.Interfaces;
 using UserService.Infrastructure;
 using UserService.Infrastructure.Repositories;
@@ -28,39 +29,33 @@ builder.Services.AddDbContext<UserServiceDbContext>(options => options.UseNpgsql
 builder.Services.AddSingleton<IHashids>(_ => new Hashids("mysecretsalt12345", 8));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService.Application.Services.UserService>();
-builder.Services.AddScoped<IJwtService, UserService.Application.Services.JwtService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IKeyclockService, KeyclockService>();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly(), typeof(UserProfile).Assembly);
 
-var jwtSection = builder.Configuration.GetSection("Jwt");
-var angularClientConfig = builder.Configuration.GetSection("Jwt:Clients:AngularClient");
+var configuration = builder.Configuration;
 
-// Extract the AngularClient configuration
-var clientId = angularClientConfig["ClientId"];
-var audiences = angularClientConfig.GetSection("Audiences").Get<string[]>();
-var authority = jwtSection["Authority"];
-var requireHttps = bool.Parse(jwtSection["RequireHttpsMetadata"] ?? "false");
-// var audiences = jwtSection.GetSection("Audiences").Get<string[]>();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.Authority = configuration["Keycloack:Authority"];
+    options.RequireHttpsMetadata = bool.Parse(configuration["Keycloack:RequireHttpsMetadata"] ?? "false");
 
-// Authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.Authority = authority;
-        options.RequireHttpsMetadata = requireHttps;
-
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = authority,
-
-            ValidateAudience = true,
-            ValidAudiences = audiences,
-
-            RoleClaimType = ClaimTypes.Role,
-            NameClaimType = "preferred_username"
-        };
-    });
-
+        ValidateIssuer = true,
+        ValidIssuer = configuration["Keycloack:Authority"],
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        RoleClaimType = ClaimTypes.Role,
+        NameClaimType = "preferred_username"
+    };
+});
 
 builder.Services.AddSwaggerGen(c =>
 {
