@@ -9,13 +9,13 @@ namespace UserService.Application.Interfaces
 {
     public interface IUserService
     {
-        public Task<UserDto> CreateUser(UserDto model);
+        public Task<UserDto> CreateUser(UserDto model, string keycloakUserId);
         public Task<List<UserDto>> GetAllUsers();
         public Task<UserDto?> GetUserById(int id);
         bool IsUserExist(string email);
         public Task<UserDto?> UpdateUser(UserDto model);
         public Task<UserDto?> GetUserByEmail(string email);
         public Task<List<UserDto>> GetUsersByIds(List<int> userIds);
-        public Task<int> GetUserIdByKeycloackId(string keycloakUserId);
+        public Task<string> GetKeycloackIdByEmail(string email);
     }
 }

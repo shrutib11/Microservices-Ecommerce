@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using UserService.Domain.Interfaces;
 using UserService.Domain.Models;
@@ -53,10 +49,10 @@ namespace UserService.Infrastructure.Repositories
             return await _context.Users.Where(u => userIds.Contains(u.Id)).ToListAsync() ?? throw new Exception("An error occurred while retrieving users by IDs.");
         }
 
-        public async Task<int> GetIdFromKeycloackId(string keycloakUserId)
+        public async Task<string> GetKeycloackIdByEmail(string email)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.KeycloackId == keycloakUserId);
-            return user?.Id ?? 0;
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email) ?? throw new Exception("User not found.");
+            return user.KeycloackId;
         }
     }
 }

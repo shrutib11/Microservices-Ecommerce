@@ -1,6 +1,3 @@
-using System.Security.Claims;
-using System.Text;
-using Microservices.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Ocelot.DependencyInjection;
@@ -49,30 +46,27 @@ builder.Services.AddOcelot();
 //         };
 //     });
 
-var jwtSection = builder.Configuration.GetSection("Jwt");
-var authority = jwtSection["Authority"];
-var requireHttps = bool.Parse(jwtSection["RequireHttpsMetadata"] ?? "false");
-var audiences = jwtSection.GetSection("Audiences").Get<string[]>();
+var configuration = builder.Configuration;
 
-// Authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.Authority = configuration["Keycloack:Authority"];
+    options.RequireHttpsMetadata = bool.Parse(configuration["Keycloack:RequireHttpsMetadata"] ?? "false");
+
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.Authority = authority;
-        options.RequireHttpsMetadata = requireHttps;
-
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = authority,
-
-            ValidateAudience = true,
-            ValidAudiences = audiences,
-
-            RoleClaimType = ClaimTypes.Role,
-            NameClaimType = "preferred_username"
-        };
-    });
+        ValidateIssuer = true,
+        ValidIssuer = configuration["Keycloack:Authority"],
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true
+    };
+});
 
 builder.Services.AddAuthorization();
 
@@ -105,5 +99,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 await app.UseOcelot();
-
 app.Run();

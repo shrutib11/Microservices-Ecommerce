@@ -39,34 +39,29 @@ builder.Services.AddGrpcClient<User.UserClient>(o =>
 
 builder.Services.AddGrpc();
 
-var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
+var configuration = builder.Configuration;
 
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.Authority = configuration["Keycloack:Authority"];
+    options.RequireHttpsMetadata = bool.Parse(configuration["Keycloack:RequireHttpsMetadata"] ?? "false");
 
-var jwtSection = builder.Configuration.GetSection("Jwt");
-var authority = jwtSection["Authority"];
-var requireHttps = bool.Parse(jwtSection["RequireHttpsMetadata"] ?? "false");
-var audiences = jwtSection.GetSection("Audiences").Get<string[]>();
-
-// Authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.Authority = authority;
-        options.RequireHttpsMetadata = requireHttps;
-
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = authority,
-
-            ValidateAudience = true,
-            ValidAudiences = audiences,
-
-            RoleClaimType = ClaimTypes.Role,
-            NameClaimType = "preferred_username"
-        };
-    });
+        ValidateIssuer = true,
+        ValidIssuer = configuration["Keycloack:Authority"],
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        RoleClaimType = ClaimTypes.Role,
+        NameClaimType = "preferred_username"
+    };
+});
 
 
 builder.Services.AddSwaggerGen(c =>

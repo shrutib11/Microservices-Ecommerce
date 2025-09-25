@@ -141,15 +141,6 @@
             }
         },
         {
-            "DownstreamPathTemplate": "/api/User/GetUserIdFromKeycloak/{keycloakId}",
-            "DownstreamScheme": "https",
-            "DownstreamHostAndPorts": [
-              { "Host": "localhost", "Port": 4000 }
-            ],
-            "UpstreamPathTemplate": "/user/GetUserIdFromKeycloak/{keycloakId}",
-            "UpstreamHttpMethod": [ "GET" ]
-        },
-        {
             "DownstreamPathTemplate": "/api/User/GetById/{id}",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4000}
@@ -223,6 +214,14 @@
             "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4000}
             ],
             "UpstreamPathTemplate": "/user/logout",
+            "UpstreamHttpMethod": ["POST"]
+        },
+        {
+            "DownstreamPathTemplate": "/api/User/refresh-token",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [{"Host": "localhost","Port": 4000}
+            ],
+            "UpstreamPathTemplate": "/user/refresh-token",
             "UpstreamHttpMethod": ["POST"]
         },
         {

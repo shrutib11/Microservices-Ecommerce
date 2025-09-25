@@ -38,52 +38,50 @@ builder.Services.AddFluentValidationAutoValidation(options =>
 builder.Services.AddValidatorsFromAssemblyContaining<CartDtoValidator>();
 builder.Services.AddEndpointsApiExplorer();
 
-var jwtSection = builder.Configuration.GetSection("Jwt");
-var authority = jwtSection["Authority"];
-var requireHttps = bool.Parse(jwtSection["RequireHttpsMetadata"] ?? "false");
-var audiences = jwtSection.GetSection("Audiences").Get<string[]>();
+var configuration = builder.Configuration;
 
-// Authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.Authority = configuration["Keycloack:Authority"];
+    options.RequireHttpsMetadata = bool.Parse(configuration["Keycloack:RequireHttpsMetadata"] ?? "false");
+
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.Authority = authority;
-        options.RequireHttpsMetadata = requireHttps;
-
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = authority,
-
-            ValidateAudience = true,
-            ValidAudiences = audiences,
-
-            RoleClaimType = ClaimTypes.Role,
-            NameClaimType = "preferred_username"
-        };
-    });
-
+        ValidateIssuer = true,
+        ValidIssuer = configuration["Keycloack:Authority"],
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        RoleClaimType = ClaimTypes.Role,
+        NameClaimType = "preferred_username"
+    };
+});
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
         BearerFormat = "JWT",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        In = ParameterLocation.Header,
         Description = "Enter: **Bearer {your JWT token}**"
     });
 
-    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
 {
         {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            new OpenApiSecurityScheme
             {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                Reference = new OpenApiReference
                 {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 }
             },
